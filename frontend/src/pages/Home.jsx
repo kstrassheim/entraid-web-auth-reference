@@ -1,33 +1,46 @@
 import { useState, useEffect } from 'react'
 import logo from '../assets/logo.png'
-import { Link, useNavigate } from 'react-router-dom' 
 import './Home.css'
 import { apiHello } from '../components/api'
-import { fetchToken, logout, login } from "../components/auth";
-import SignInButton from './SignInButton'
+import AzureLogon from '../AzureLogon'
+import { useMsal } from '@azure/msal-react';
+import { loginRequest, getProfilePhoto } from '../components/azureAuth';
 
 function Home() {
-  const [count, setCount] = useState(0);
-  const [data, setData] = useState(null);
-  const navigate = useNavigate();
-  
-  const setCountFunc = () => {
-    setCount(count + 1);
-  }
+  // Azure Logon 
+  const { instance } = useMsal();
+  const [account, setAccount] = useState(instance.getActiveAccount());
+  const activeAccount = instance.getActiveAccount();
 
-  const logoutFunc = async () => {
-      await logout();
-      navigate('/');
-  }
+  // photo url state
+  const [photoUrl, setPhotoUrl] = useState(null);
+  // API Data
+  const [data, setData] = useState(null);
 
   const fetchData = async () => {
     const data = await apiHello()
     setData(data)
   }
 
+  const fetchProfilePhotoFunc = async () => {
+    if (activeAccount) {
+      let photoUrl = await getProfilePhoto(instance, activeAccount);
+      setPhotoUrl(photoUrl);
+    }
+  }
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    const currentAccount = instance.getActiveAccount();
+    if (currentAccount && currentAccount !== account) {
+      setAccount(currentAccount);
+    }
+  }, [instance, account ? account.homeAccountId : null]);
+
+  // get api data
+  useEffect(() => { fetchProfilePhotoFunc(); }, [account]);
+
+  // get profile image
+  useEffect(() => { fetchData();  }, []);
 
   return (
     <>
@@ -36,30 +49,28 @@ function Home() {
             <img src={logo} className="logo " alt="logo" />
           </a>
       </div>
-      <h1>FastAPI-Reference</h1>
-      <div className="login-link">
-        {
-                fetchToken() ? (<>
-                <p>you are logged in</p>
-                <button onClick={logoutFunc}>Logout</button>
-                </>
-              ) 
-              : 
-              <></>
-          }
-      </div>
+      <h1>Entra Auth Web Reference</h1>
+      <AzureLogon />
+      {activeAccount && (
+        <div>
+          <h2>{activeAccount.name}</h2>
+          {photoUrl ? (
+            <img src={photoUrl} alt="Profile" style={{ width: '100px', borderRadius: '50%' }} />
+          ) : (
+            <p>No profile photo available</p>
+          )}
+        </div>
+      )}
       <div className="card">
-        <SignInButton>Azure Sign In</SignInButton>
-        <button onClick={setCountFunc}>
-          count is {count}
-        </button>
-        <p className="read-the-docs">
-          Click on the Logo to learn more
-        </p>
+        
         <p>{import.meta.env.MODE}</p>
         <h2>
           {data ? data.message : 'Loading...'}
         </h2>
+
+        <p className="read-the-docs">
+          Click on the Logo to learn more
+        </p>
       </div>
     </>
   )

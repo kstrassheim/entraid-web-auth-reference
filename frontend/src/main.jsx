@@ -6,7 +6,7 @@ import App from './App.jsx'
 
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import { msalConfig } from './components/authConfig';
+import { msalConfig } from './components/azureAuth.js';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
