@@ -3,16 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from pathlib import Path
+from auth import auth_router
+from api import api_router
 # Init FastAPI
 app = FastAPI()
 origins = ["http://localhost:5173", "localhost:5173"]
 app.add_middleware(CORSMiddleware,allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
-# API Router
-api_router = APIRouter()
-@api_router.get("/hello")
-def read_hello():
-    return {"message": "Hello from API"}
+# Register Auth Router
+app.include_router(auth_router, prefix="/auth")
+
+# Register API Router
 app.include_router(api_router, prefix="/api")
 
 # Frontend Router
