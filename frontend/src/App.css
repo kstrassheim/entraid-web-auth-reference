@@ -24,6 +24,7 @@ ul {
   align-items: center;
   font-size: 1.5rem;
   font-weight: bold;
+  margin-right: auto;  /* Logo stays on the left side */
 }
 
 .navbar-logo img {
@@ -95,4 +96,27 @@ ul {
 .profile-container:hover .profile-name {
   opacity: 1;
   visibility: visible;
+}
+
+.logon-buttons {
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;
+  gap: 1rem;                /* Space between buttons */
+  margin: 0 auto; 
+  margin-right: 30px;          /* Additional centering if needed */
+}
+
+.logon-buttons button {
+  background-color: #E0FFFF; /* Light background */
+  color: #000;               /* Dark text color for contrast */
+  border: none;
+  border-radius: 0.5rem;     /* Rounded corners */
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.logon-buttons button:hover {
+  background-color: #AFEEEE; /* Lighter on hover */
 }
