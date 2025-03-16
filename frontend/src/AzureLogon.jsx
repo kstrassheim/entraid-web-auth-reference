@@ -6,15 +6,17 @@ import { loginRequest } from './components/azureAuth';
 const AzureLogon = () => {
   const { instance } = useMsal();
 
-  const logonFunc = async () => {
+  const logonFunc = async (forcePopup = false) => {
     try {
-      const response = await instance.loginPopup(loginRequest);
+      let loginRequestParam = forcePopup ? { ...loginRequest, prompt: "select_account" } : loginRequest;
+      const response = await instance.loginPopup(loginRequestParam);
       instance.setActiveAccount(response.account);
 
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
+
 
   const logoutFunc = async () => {
     await instance.logoutRedirect({
@@ -25,9 +27,10 @@ const AzureLogon = () => {
   return <>
       <AuthenticatedTemplate>
         <button onClick={logoutFunc}>Sign Out from Azure</button>
+        <button onClick={()=>logonFunc(true)}>Sign In with Different Account</button>
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
-        <button onClick={logonFunc}>Sign In with Azure</button>
+        <button onClick={logoutFunc}>Sign In with Azure</button>
       </UnauthenticatedTemplate>
     </>
 };

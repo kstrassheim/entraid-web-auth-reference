@@ -34,7 +34,7 @@ function Home() {
     if (currentAccount && currentAccount !== account) {
       setAccount(currentAccount);
     }
-  }, [instance, account ? account.homeAccountId : null]);
+  }, [instance, activeAccount ? activeAccount.name : null]);
 
   // get api data
   useEffect(() => { fetchProfilePhotoFunc(); }, [account]);

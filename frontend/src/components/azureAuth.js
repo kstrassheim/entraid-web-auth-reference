@@ -62,7 +62,8 @@ export const getProfilePhoto = async (instance, activeAccount) => {
         console.error('Failed to fetch profile photo:', response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching profile photo:', error);
+      if (error.errorMessage !== "You must call and await the initialize function before attempting to call any other MSAL API.  For more visit: aka.ms/msaljs/browser-errors")
+        console.error('Error fetching profile photo:', error);
     }
 };
 
