@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route } from "react-router-dom";
-import { RequireToken } from "./components/auth";
+import { RequireToken, setToken } from "./components/auth";
 import Login from './Login';
 import Home from './pages/Home';  
 import NotFound from './404';
