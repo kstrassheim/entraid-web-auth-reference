@@ -33,15 +33,12 @@ async def frontend_handler(path: str):
 app.include_router(frontend_router, prefix="")
 
 
-@app.get("/protected")
-async def protected_route(token=Security(azure_scheme, scopes=["user_impersonation"])):
-    return {"message": "Access granted"}
-
 # On startup, load the OpenID configuration (optional but recommended)
-from common import azure_scheme
-@app.on_event("startup")
-async def startup_event():
-    await azure_scheme.openid_config.load_config()
+# I get 401 with that
+# from common import azure_scheme
+# @app.on_event("startup")
+# async def startup_event():
+#     await azure_scheme.openid_config.load_config()
 
 # Bootstrap the app
 if __name__ == '__main__':

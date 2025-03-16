@@ -2,8 +2,6 @@
 import { LogLevel } from '@azure/msal-browser';
 
 const prodUri = 'http://localhost:8000';
-// const tenantId = '1e1e851f-618f-40d4-9c2d-45355ad039a9';
-// const clientId = '6a8e74ac-e0e1-429b-9ac1-8135042f973d';
 
 const fetchEntraConfig = async () => {
   const host = import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000';
@@ -23,7 +21,8 @@ export const msalConfig = async () =>{
   return {
     auth: {
       clientId: client_id,
-      authority: `https://login.microsoftonline.com/${tenant_id}`,
+      // required for native tenant users
+      authority: `https://login.microsoftonline.com/${tenant_id}/v2.0`,
       redirectUri: `${redirectHost}/redirect`,
       postLogoutRedirectUri: '/',
     },
@@ -43,7 +42,7 @@ export const msalConfig = async () =>{
 };
 
 export const loginRequest = {
-  scopes: ['User.Read', "api://6a8e74ac-e0e1-429b-9ac1-8135042f973d/user_impersonation"],
+  scopes: ['User.Read'],
 };
 
 
