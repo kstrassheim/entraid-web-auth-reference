@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import reactLogo from '../assets/react.svg'
+import { Link } from 'react-router-dom' 
 import './Home.css'
 
 function Home() {
@@ -35,6 +36,9 @@ function Home() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <div className="login-link">
+        <Link to="/login">Go to Login</Link>
+      </div>
       <div className="card">
         <button onClick={setCountFunc}>
           count is {count}
