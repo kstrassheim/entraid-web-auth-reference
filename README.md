@@ -1,5 +1,5 @@
-# Fast-API Reference App
-The app is creating a debugable combination between Fast-API and Vite (React). A preview can viewed on https://fast-api-reference.azurewebsites.net/ 
+# Entra Id Web Auth Reference
+The web app provides a authentication to Azure Entra ID and role checking. It is useful to build admin pages out of scratch.
 ## Purpose detail
 The app which fulfills the following requirements for a 
 - Quick to initialize
@@ -30,6 +30,8 @@ python -m venv venv
 .\venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
+4. Go into the frontend folder `cd ./frontend`
+5. Run `npm install` which will download and install all frontend packages
 ### Architecture
 Here is the simple architecture description
 #### ./backend
