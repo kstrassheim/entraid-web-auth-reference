@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { loginRequest } from './azureAuth';
+import dummy_avatar from '../assets/dummy-avatar.jpg'
 
 // Custom function to receive the profile photo
 export const getProfilePhoto = async (instance, activeAccount) => {
@@ -54,13 +55,11 @@ const EntraProfile = () => {
       {activeAccount && (
         <div className="profile-container">
           {photoUrl ? (
-            <>
               <img src={photoUrl} alt="Profile" className="profile-image" />
-              <div className="profile-name">{activeAccount.name}</div>
-            </>
           ) : (
-            <h2>{activeAccount.name}</h2>
+            <img src={dummy_avatar} alt="Profile" className="profile-image" />
           )}
+          <div className="profile-name">{activeAccount.name}</div>
         </div>
       )}
     </>
