@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react'
-import logo from '../assets/logo.png'
 import './Home.css'
 import { apiHello } from '../components/api'
-import AzureLogon from '../AzureLogon'
 import { useMsal } from '@azure/msal-react';
-import { loginRequest, getProfilePhoto } from '../components/azureAuth';
 
 function Home() {
   // Azure Logon 
@@ -22,45 +19,14 @@ function Home() {
     setData(data)
   }
 
-  const fetchProfilePhotoFunc = async () => {
-    if (activeAccount) {
-      let photoUrl = await getProfilePhoto(instance, activeAccount);
-      setPhotoUrl(photoUrl);
-    }
-  }
+ 
 
-  useEffect(() => {
-    const currentAccount = instance.getActiveAccount();
-    if (currentAccount && currentAccount !== account) {
-      setAccount(currentAccount);
-    }
-  }, [instance, activeAccount ? activeAccount.name : null]);
-
-  // get api data
-  useEffect(() => { fetchProfilePhotoFunc(); }, [account]);
 
   // get profile image
   useEffect(() => { fetchData();  }, []);
 
   return (
     <>
-      <div>
-          <a href="https://github.com/kstrassheim/fastapi-reference" target="_blank">
-            <img src={logo} className="logo " alt="logo" />
-          </a>
-      </div>
-      <h1>Entra Auth Web Reference</h1>
-      <AzureLogon />
-      {activeAccount && (
-        <div>
-          <h2>{activeAccount.name}</h2>
-          {photoUrl ? (
-            <img src={photoUrl} alt="Profile" style={{ width: '100px', borderRadius: '50%' }} />
-          ) : (
-            <p>No profile photo available</p>
-          )}
-        </div>
-      )}
       <div className="card">
         
         <p>{import.meta.env.MODE}</p>
