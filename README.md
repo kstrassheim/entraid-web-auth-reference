@@ -30,8 +30,8 @@ python -m venv venv
 .\venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
-4. Go into the frontend folder `cd ./frontend`
-5. Run `npm install` which will download and install all frontend packages
+5. Go into the frontend folder `cd ./frontend`
+6. Run `npm install` which will download and install all frontend package5
 ### Architecture
 Here is the simple architecture description
 #### ./backend
