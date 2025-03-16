@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { RequireToken } from "./components/auth";
 import Login from './Login';
 import Home from './pages/Home';  
+import NotFound from './404';
 import './App.css'
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element = {<RequireToken><Home/></RequireToken>}/>
           <Route path="/login" element = {<Login/>}/>
+          <Route path="*" element = {<NotFound/>}/>
         </Routes>
       </div>
     </>
