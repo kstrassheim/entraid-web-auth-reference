@@ -6,16 +6,21 @@ import App from './App.jsx'
 
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import { msalConfig } from './components/azureAuth.js';
+import { msalConfig } from './components/entraAuth.js';
 
-const msalInstance = new PublicClientApplication(msalConfig);
+const init = async () => {
+  const msalConfigVal= await msalConfig();
+  const msalInstance = new PublicClientApplication(msalConfigVal);
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <BrowserRouter  future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <App />
-      </BrowserRouter>
-    </MsalProvider>
-  </StrictMode>
-)
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <MsalProvider instance={msalInstance}>
+        <BrowserRouter  future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <App />
+        </BrowserRouter>
+      </MsalProvider>
+    </StrictMode>
+  )
+}
+init();
+

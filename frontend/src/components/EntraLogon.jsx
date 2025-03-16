@@ -1,6 +1,6 @@
 import React from 'react';
 import { useMsal , AuthenticatedTemplate, UnauthenticatedTemplate} from '@azure/msal-react';
-import { loginRequest } from './azureAuth';
+import { loginRequest } from './entraAuth';
 
 const EntraLogon = () => {
   const { instance } = useMsal();

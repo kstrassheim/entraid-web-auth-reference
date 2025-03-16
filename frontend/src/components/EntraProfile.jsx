@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
-import { loginRequest } from './azureAuth';
+import { loginRequest } from './entraAuth';
 import dummy_avatar from '../assets/dummy-avatar.jpg'
 
 // Custom function to receive the profile photo

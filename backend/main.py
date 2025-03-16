@@ -3,8 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from pathlib import Path
-from auth import auth_router
+# load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+# get routers
 from api import api_router
+from auth import auth_router
 from common import azure_scheme
 # Init FastAPI
 app = FastAPI()
