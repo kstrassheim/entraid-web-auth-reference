@@ -1,10 +1,11 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from pathlib import Path
 from auth import auth_router
 from api import api_router
+from common import azure_scheme
 # Init FastAPI
 app = FastAPI()
 origins = ["http://localhost:5173", "localhost:5173"]
@@ -26,6 +27,17 @@ async def frontend_handler(path: str):
         fp = dist / "index.html"
     return FileResponse(fp)
 app.include_router(frontend_router, prefix="")
+
+
+@app.get("/protected")
+async def protected_route(token=Security(azure_scheme, scopes=["user_impersonation"])):
+    return {"message": "Access granted"}
+
+# On startup, load the OpenID configuration (optional but recommended)
+from common import azure_scheme
+@app.on_event("startup")
+async def startup_event():
+    await azure_scheme.openid_config.load_config()
 
 # Bootstrap the app
 if __name__ == '__main__':

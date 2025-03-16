@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import './Home.css'
 import { apiHello } from '../components/api'
 import { fetchToken, logout, login } from "../components/auth";
+import SignInButton from './SignInButton'
 
 function Home() {
   const [count, setCount] = useState(0);
@@ -48,6 +49,7 @@ function Home() {
           }
       </div>
       <div className="card">
+        <SignInButton>Azure Sign In</SignInButton>
         <button onClick={setCountFunc}>
           count is {count}
         </button>

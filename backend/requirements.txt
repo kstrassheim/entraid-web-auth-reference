@@ -1,3 +1,6 @@
-fastapi==0.68.1
-uvicorn==0.15.0
+fastapi==0.115.11
+uvicorn==0.34.0
 aiofiles==24.1.0
+fastapi-azure-auth==5.1.0
+python-dotenv==1.0.1
+pydantic==2.10.6
