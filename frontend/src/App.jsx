@@ -25,9 +25,7 @@ function App() {
         </li>
       </ul>
     </nav>
-      <div className ="App">
-        
-        
+      <div className ="main-content">
         <Routes>
           <Route path="/" element = {<Home/>}/>
           <Route path="*" element = {<NotFound/>}/>

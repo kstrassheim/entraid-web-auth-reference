@@ -1,3 +1,9 @@
+.main-content {
+  
+  
+  /* Remove any text-align or max-width styling if present */
+}
+
 /* Reset any default list styling */
 ul {
   list-style: none;
@@ -7,7 +13,7 @@ ul {
 
 /* Navigation Bar */
 .navbar {
-  position: fixed; /* Change to fixed */
+  position: sticky;  /* Change to fixed */
   top: 0;
   width: 100%; /* Ensure it spans the full width */
   z-index: 1000; /* Ensures it stays above other content */
