@@ -43,7 +43,7 @@ export const msalConfig = async () =>{
 };
 
 export const loginRequest = {
-  scopes: ['User.Read'],
+  scopes: ['User.Read', "api://6a8e74ac-e0e1-429b-9ac1-8135042f973d/user_impersonation"],
 };
 
 
