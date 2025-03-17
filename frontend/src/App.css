@@ -1,6 +1,4 @@
 .main-content {
-  
-  
   /* Remove any text-align or max-width styling if present */
 }
 
@@ -13,44 +11,54 @@ ul {
 
 /* Navigation Bar */
 .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #0078d4;
+  padding: 10px;
   position: sticky;  /* Change to fixed */
   top: 0;
   width: 100%; /* Ensure it spans the full width */
   z-index: 1000; /* Ensures it stays above other content */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #1E90FF; /* Nice blue color */
-  padding: 1rem 2rem;
-  color: #fff;
 }
 
 .navbar-logo {
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-right: auto;  /* Logo stays on the left side */
 }
 
 .navbar-logo img {
+  height: 40px;
+  margin-right: 10px;
   width: 50px; /* Adjusted to 50px */
-  height: 50px; /* Adjusted to 50px */
-  margin-right: 0.5rem;
   margin-top: 0.4rem;
 }
 
 .navbar-pages {
   display: flex;
-  align-items: left;
-  gap: 1rem;
-  margin-left:0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  gap: 0.5rem; /* Closer together */
+  margin-left: 0;
+}
+
+.navbar-pages li {
+  margin-right: 10px; /* Closer together */
 }
 
 .navbar-links {
   display: flex;
-  align-items: right;
-  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  gap: 0.5rem; /* Closer together */
+}
+
+.navbar-links li {
+  margin-left: 10px; /* Closer together */
 }
 
 .nav-item {
@@ -72,6 +80,21 @@ ul {
 .nav-item button:hover,
 .nav-item a:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #0078d4;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #005a9e;
+  transform: scale(1.05);
+  color: #e0e0e0; /* Lighter hover text color */
 }
 
 /* Profile Section */
