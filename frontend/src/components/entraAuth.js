@@ -41,10 +41,10 @@ export const loginRequest = {
   scopes: ['User.Read'],
 };
 
-export const retreiveToken = async (instance) => {
+export const retreiveToken = async (instance, extraScopes = []) => {
   const account = instance.getActiveAccount();
   const tokenResponse = await instance.acquireTokenSilent({
-    scopes: [`api://${entra.clientId}/user_impersonation`],
+    scopes: [`api://${entra.clientId}/user_impersonation`, ...extraScopes],
     account: account,
   });
   return tokenResponse.accessToken;

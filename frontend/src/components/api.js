@@ -1,8 +1,9 @@
 import { backendUrl } from '../config';
 import { retreiveToken } from './entraAuth';
 
-export const userData = async (accessToken) => {
+export const getUserData = async (instance) => {
   try {
+    const accessToken = await retreiveToken(instance);
     const response = await fetch(`${backendUrl}/api/user-data`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -17,8 +18,9 @@ export const userData = async (accessToken) => {
     console.error('Error fetching data:', error);
   }
 };
-export const adminData = async (accessToken) => {
+export const getAdminData = async (instance) => {
   try {
+    const accessToken = await retreiveToken(instance, ['Group.Read.All']);
     const response = await fetch(`${backendUrl}/api/admin-data`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -33,6 +35,3 @@ export const adminData = async (accessToken) => {
     console.error('Error fetching data:', error);
   }
 };
-
-// re-expose getToken to avoid always referencing entraAuth on every page
-export const getToken = retreiveToken;

@@ -4,3 +4,4 @@ aiofiles==24.1.0
 fastapi-azure-auth==5.1.0
 python-dotenv==1.0.1
 pydantic==2.10.6
+requests==2.32.3

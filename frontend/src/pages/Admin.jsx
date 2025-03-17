@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import './Home.css'
-import { adminData, getToken } from '../components/api'
+import { getAdminData } from '../components/api'
 import { useMsal } from '@azure/msal-react';
 
 const Admin = () => {
@@ -9,8 +9,7 @@ const Admin = () => {
   const initFetchCompleted = useRef(false);
 
   const fetchData = async () => {
-    const token = await getToken(instance);
-    const result = await adminData(token)
+    const result = await getAdminData(instance)
     setData(result)
   }
 

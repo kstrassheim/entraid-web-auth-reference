@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import './Home.css'
-import { userData, getToken } from '../components/api'
+import { getUserData } from '../components/api'
 import { useMsal } from '@azure/msal-react';
 import {env} from '../config'
 
@@ -10,8 +10,7 @@ const Home = () => {
   const initFetchCompleted = useRef(false);
 
   const fetchData = async () => {
-    const token = await getToken(instance);
-    const result = await userData(token);
+    const result = await getUserData(instance);
     setData(result)
   }
 
