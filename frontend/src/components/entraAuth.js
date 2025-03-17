@@ -9,19 +9,18 @@ const initEntraConfig = async () => {
   const {tenant_id, client_id} = await response.json();
   entra.clientId = client_id;
   entra.tenantId = tenant_id;
+  entra.loaded = true;
   return;
 }
 
 export const msalConfig = async () =>{
   await initEntraConfig();
-  
   return {
     auth: {
       clientId: entra.clientId,
-      // required for native tenant users
       authority: `https://login.microsoftonline.com/${entra.tenantId}/v2.0`,
-      redirectUri: `${frontendUrl}/redirect`,
-      postLogoutRedirectUri: '/',
+      redirectUri: frontendUrl,
+      postLogoutRedirectUri: frontendUrl+'/post-logout',
     },
     cache: {
       cacheLocation: 'sessionStorage',

@@ -2,6 +2,7 @@ import React from 'react';
 import { useMsal , AuthenticatedTemplate, UnauthenticatedTemplate} from '@azure/msal-react';
 import { loginRequest } from './entraAuth';
 import { useNavigate } from 'react-router-dom';
+import {frontendUrl} from '../config'
 
 const EntraLogon = () => {
   const { instance } = useMsal();
@@ -26,9 +27,12 @@ const EntraLogon = () => {
 
 
   const logoutFunc = async () => {
-    await instance.logoutRedirect({
-      postLogoutRedirectUri: window.location.origin // or any URL you want users redirected to
-    });
+    sessionStorage.clear();
+    localStorage.clear();
+    await instance.logoutPopup();
+    // {
+    //   postLogoutRedirectUri : `${frontendUrl}/post-logout`
+    // }
   }
 
   return <div className="logon-buttons">
