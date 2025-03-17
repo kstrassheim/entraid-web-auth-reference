@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   
   if (!hasAccess) {
     sessionStorage.setItem("redirectPath", location.pathname);
-    return <Navigate to="/access-denied" replace />;
+    return <Navigate to="/access-denied" replace state={{ requiredRoles }} />;
   }
   
   return children;

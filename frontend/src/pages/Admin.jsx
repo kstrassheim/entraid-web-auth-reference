@@ -1,17 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import './Home.css'
-import { userData, getToken } from '../components/api'
+import { adminData, getToken } from '../components/api'
 import { useMsal } from '@azure/msal-react';
-import {env} from '../config'
 
-const Home = () => {
-  const { instance } = useMsal();
-  const [data, setData] = useState(null);
+const Admin = () => {
+  const { instance } = useMsal()
+  const [data, setData] = useState(null)
   const initFetchCompleted = useRef(false);
 
   const fetchData = async () => {
     const token = await getToken(instance);
-    const result = await userData(token);
+    const result = await adminData(token)
     setData(result)
   }
 
@@ -25,8 +24,7 @@ const Home = () => {
   return (
     <>
       <div>
-        <h1>Home Page</h1>
-        <p>Environment:{env}</p>
+        <h1>Admin Page</h1>
         <h2>{data ? data.message : 'Loading...'}</h2>
         <button onClick={fetchData}>Reload Data</button>
         <p className="read-the-docs">
@@ -37,4 +35,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Admin

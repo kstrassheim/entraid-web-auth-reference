@@ -40,9 +40,16 @@ ul {
   margin-top: 0.4rem;
 }
 
+.navbar-pages {
+  display: flex;
+  align-items: left;
+  gap: 1rem;
+  margin-left:0;
+}
+
 .navbar-links {
   display: flex;
-  align-items: center;
+  align-items: right;
   gap: 1rem;
 }
 
