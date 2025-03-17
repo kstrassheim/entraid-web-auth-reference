@@ -40,12 +40,12 @@ ul {
   margin: 0;
   padding: 0;
   align-items: center;
-  gap: 0.5rem; /* Closer together */
-  margin-left: 0;
+  gap: 0.2rem; /* Closer together */
+  margin-left: 1rem; /* Move a bit to the right */
 }
 
 .navbar-pages li {
-  margin-right: 10px; /* Closer together */
+  margin-right: 3px; /* Closer together */
 }
 
 .navbar-links {
@@ -54,11 +54,12 @@ ul {
   margin: 0;
   padding: 0;
   align-items: center;
-  gap: 0.5rem; /* Closer together */
+  gap: 0.2rem; /* Closer together */
+  margin-left: auto; /* Pushes the links to the left */
 }
 
 .navbar-links li {
-  margin-left: 10px; /* Closer together */
+  margin-left: 3px; /* Closer together */
 }
 
 .nav-item {
@@ -85,7 +86,7 @@ ul {
 .nav-link {
   color: white;
   text-decoration: none;
-  padding: 10px 20px;
+  padding: 10px 12px;
   border-radius: 5px;
   background-color: #0078d4;
   transition: background-color 0.3s ease, transform 0.3s ease;
