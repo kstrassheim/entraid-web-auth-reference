@@ -1,5 +1,5 @@
-export const backendUrl = import.meta.env.MODE === 'production' ? '': 'http://localhost:8000';
-
+import { backendUrl } from '../config';
+import { retreiveToken } from './entraAuth';
 export const apiHello = async (accessToken) => {
     try {
         const response = await fetch(`${backendUrl}/api/data`, {
@@ -16,3 +16,5 @@ export const apiHello = async (accessToken) => {
         console.error('Error fetching data:', error);
       }
     };
+
+export const getToken = retreiveToken;

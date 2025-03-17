@@ -1,29 +1,26 @@
-// authConfig.js
 import { LogLevel } from '@azure/msal-browser';
+import { backendUrl, frontendUrl, entra } from "../config";
 
-const prodUri = 'http://localhost:8000';
-
-const fetchEntraConfig = async () => {
-  const host = import.meta.env.MODE === 'production' ? '' : 'http://localhost:8000';
-  const response = await fetch(`${host}/auth/entra-config`);
+const initEntraConfig = async () => {
+  const response = await fetch(`${backendUrl}/auth/entra-config`);
   if (!response.ok) {
     throw new Error("Failed to fetch Entra config");
   }
-
-  return  await response.json();
+  const {tenant_id, client_id} = await response.json();
+  entra.clientId = client_id;
+  entra.tenantId = tenant_id;
+  return;
 }
 
-export const redirectHost = import.meta.env.MODE === 'production' ? prodUri: 'http://localhost:5173';
-
 export const msalConfig = async () =>{
-  const {tenant_id, client_id} = await fetchEntraConfig();
-
+  await initEntraConfig();
+  
   return {
     auth: {
-      clientId: client_id,
+      clientId: entra.clientId,
       // required for native tenant users
-      authority: `https://login.microsoftonline.com/${tenant_id}/v2.0`,
-      redirectUri: `${redirectHost}/redirect`,
+      authority: `https://login.microsoftonline.com/${entra.tenantId}/v2.0`,
+      redirectUri: `${frontendUrl}/redirect`,
       postLogoutRedirectUri: '/',
     },
     cache: {
@@ -45,5 +42,13 @@ export const loginRequest = {
   scopes: ['User.Read'],
 };
 
+export const retreiveToken = async (instance) => {
+  const account = instance.getActiveAccount();
+  const tokenResponse = await instance.acquireTokenSilent({
+    scopes: [`api://${entra.clientId}/user_impersonation`],
+    account: account,
+  });
+  return tokenResponse.accessToken;
+}
 
 

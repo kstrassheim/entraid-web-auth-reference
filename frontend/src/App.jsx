@@ -5,6 +5,8 @@ import logo from './assets/logo.png'
 import './App.css'
 import EntraLogon from './components/EntraLogon'
 import EntraProfile from './components/EntraProfile'
+import AccessDenied from './components/AccessDenied'
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -27,7 +29,8 @@ function App() {
     </nav>
       <div className ="main-content">
         <Routes>
-          <Route path="/" element = {<Home/>}/>
+          <Route path="/" element = {<ProtectedRoute requiredRoles={[]}><Home/></ProtectedRoute>}/>
+          <Route path="/access-denied" element = {<AccessDenied />}/>
           <Route path="*" element = {<NotFound/>}/>
         </Routes>
       </div>
