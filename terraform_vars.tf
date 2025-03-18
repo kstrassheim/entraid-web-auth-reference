@@ -1,12 +1,12 @@
-variable env {
+variable app_name {
     description = "The environment to deploy the resources to"
-    default     = "dev"
+    default     = "entraid_web_auth_reference"
     type        = string
 }
 
-variable app_name {
+variable env {
     description = "The environment to deploy the resources to"
-    default     = "entra_auth_reference"
+    default     = "dev"
     type        = string
 }
 

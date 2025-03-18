@@ -187,4 +187,5 @@ override.tf
 *_override.tf
 *.tfvars
 
-*.output.json
+*output.json
+outputs.json
