@@ -175,3 +175,14 @@ cython_debug/
 
 
 backend/dist/*
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+terraform.lock.hcl
+override.tf
+*_override.tf
+*.tfvars
