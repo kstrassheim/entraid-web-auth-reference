@@ -40,21 +40,18 @@ resource "azurerm_application_insights" "log" {
 
 data "azuread_client_config" "current" {}
 
+# Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
   display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
-  identifier_uris  = ["api://example-app"]
+  #identifier_uris  = []
   logo_image       = filebase64("${path.module}/frontend/src/assets/logo.png")
   owners           = [data.azuread_client_config.current.object_id]
+  // Single Tenant
   sign_in_audience = "AzureADMyOrg"
 
   api {
     mapped_claims_enabled          = true
     requested_access_token_version = 2
-
-    # known_client_applications = [
-    #   azuread_application.known1.client_id,
-    #   azuread_application.known2.client_id,
-    # ]
 
     oauth2_permission_scope {
       admin_consent_description  = "Allow the application to access the backend on behalf of the signed-in user."
@@ -66,17 +63,9 @@ resource "azuread_application" "reg" {
       user_consent_display_name  = "Backend Access"
       value                      = "user_impersonation"
     }
-
-    oauth2_permission_scope {
-      admin_consent_description  = "Administer the application"
-      admin_consent_display_name = "Administer"
-      enabled                    = true
-      id                         = "be98fa3e-ab5b-4b11-83d9-04ba2b7946bc"
-      type                       = "Admin"
-      value                      = "administer"
-    }
   }
 
+  ## App Roles to Control access to the application
   app_role {
     allowed_member_types = ["User", "Application"]
     description          = "Admins can manage roles and perform all task actions"
@@ -95,31 +84,11 @@ resource "azuread_application" "reg" {
     value                = "User"
   }
 
-#   feature_tags {
-#     enterprise = true
-#     gallery    = true
-#   }
-
-#   optional_claims {
-#     access_token {
-#       name = "myclaim"
-#     }
-
-#     access_token {
-#       name = "otherclaim"
-#     }
-
-#     id_token {
-#       name                  = "userclaim"
-#       source                = "user"
-#       essential             = true
-#       additional_properties = ["emit_as_roles"]
-#     }
-
-#     saml2_token {
-#       name = "samlexample"
-#     }
-#   }
+  feature_tags {
+    # enable this app to be visible as enterprise application and in gallery
+    enterprise = true
+    gallery    = true
+  }
 
   required_resource_access {
     resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph
@@ -130,7 +99,7 @@ resource "azuread_application" "reg" {
     }
 
     resource_access {
-        id   = "e1fe6dd8-ba31-4d61-89e7-88639da4683d"  # Group.Read.All
+        id   = "5b567255-7703-4780-807c-7be8301ae99b"  # Group.Read.All
         type = "Role"
     }
   }
@@ -149,8 +118,17 @@ resource "azuread_application" "reg" {
   }
 }
 
+resource "azuread_application_identifier_uri" "reg_identifier" {
+  application_id = azuread_application.reg.id
+  identifier_uri = "api://${azuread_application.reg.client_id}"
+}
+
+# Generate Enterprise Application (Prinicpal) out of App Registration 
 resource "azuread_service_principal" "enterprise" {
   client_id = azuread_application.reg.client_id
+
+  # Allow only assigned users to login to this application
+  app_role_assignment_required  = true
 }
 
 output "web_url" {
@@ -158,9 +136,13 @@ output "web_url" {
   description = "The URL of the deployed web app"
 }
 
-output "instrumentation_key" {
-  value = azurerm_application_insights.log.instrumentation_key
-  sensitive = true
+output "application_insights_instrumentation_key" {
+  value = nonsensitive(azurerm_application_insights.log.instrumentation_key)
+}
+
+output "application_insights_connection_string" {
+  description = "The connection string for Application Insights"
+  value       = nonsensitive(azurerm_application_insights.log.connection_string)
 }
 
 output "client_id" {
@@ -171,6 +153,11 @@ output "client_id" {
 output "tenant_id" {
   description = "The Tenant for the logon"
   value       =  azuread_service_principal.enterprise.application_tenant_id
+}
+
+output "oauth2_permission_scope_uri" {
+  description = "The full URI for the defined OAuth2 permission scope"
+  value       = "api://${azuread_application.reg.client_id}/${tolist(azuread_application.reg.api[0].oauth2_permission_scope)[0].value}"
 }
 
 # resource "local_file" "outputs_json" {
