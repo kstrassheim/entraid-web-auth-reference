@@ -48,7 +48,6 @@ data "azuread_client_config" "current" {}
 # Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
   display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
-  #identifier_uris  = []
   logo_image       = filebase64("${path.module}/frontend/src/assets/logo.png")
   owners           = [data.azuread_client_config.current.object_id]
   // Single Tenant
@@ -126,11 +125,6 @@ resource "azuread_application" "reg" {
       id_token_issuance_enabled     = false
     }
   }
-}
-
-resource "azuread_application_identifier_uri" "reg_identifier" {
-  application_id = azuread_application.reg.id
-  identifier_uri = "api://${azuread_application.reg.client_id}"
 }
 
 # Generate Enterprise Application (Prinicpal) out of App Registration 
