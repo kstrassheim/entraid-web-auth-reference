@@ -189,3 +189,4 @@ override.tf
 
 *output.json
 outputs.json
+**/terraform.config

@@ -94,13 +94,18 @@ resource "azuread_application" "reg" {
     resource_app_id = "00000003-0000-0000-c000-000000000000" # Microsoft Graph
 
     resource_access {
-      id   = "df021288-bdef-4463-88db-98f22de89214" # User.Read.All
-      type = "Role"
+      id   = lookup(local.user_permissions_lookup,"User.Read.All")
+      type = lookup(local.azure_app_permission_types, "Delegated")
     }
 
     resource_access {
-        id   = "5b567255-7703-4780-807c-7be8301ae99b"  # Group.Read.All
-        type = "Role"
+      id   = lookup(local.user_permissions_lookup,"Group.Read.All")
+      type = lookup(local.azure_app_permission_types, "Delegated")
+    }
+
+    resource_access {
+      id   = lookup(local.app_permissions_lookup,"Directory.Read.All")
+      type = lookup(local.azure_app_permission_types, "Application")
     }
   }
 
@@ -160,6 +165,28 @@ output "oauth2_permission_scope_uri" {
   value       = "api://${azuread_application.reg.client_id}/${tolist(azuread_application.reg.api[0].oauth2_permission_scope)[0].value}"
 }
 
+output "app_roles_allowed_member_types_list" {
+  description = "List of allowed member types for each app role"
+  value = join(", ", distinct(flatten([
+    for role in azuread_application.reg.app_role : tolist(role.allowed_member_types)
+  ])))
+}
+
+output "requested_graph_api_delegated_permissions" {
+    value = distinct(compact(flatten([
+    for rra in azuread_application.reg.required_resource_access : [
+      for ra in rra.resource_access : ra.type == "Scope" ? lookup(local.user_permissions_lookup_rev, ra.id, "unknown") : null
+    ]
+  ])))
+}    
+
+output "requested_graph_api_application_permissions" {
+    value = distinct(compact(flatten([
+    for rra in azuread_application.reg.required_resource_access : [
+      for ra in rra.resource_access : ra.type == "Role" ? lookup(local.app_permissions_lookup_rev, ra.id, "unknown") : null
+    ]
+  ])))
+} 
 # resource "local_file" "outputs_json" {
 #   content = jsonencode({
 #     web_url              = "https://${azurerm_linux_web_app.web.default_hostname}"
