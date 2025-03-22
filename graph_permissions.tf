@@ -1,17 +1,6 @@
-data "external" "os" {
-  program = [
-      "bash",
-      "-c",
-      <<EOF
-  os=$(uname 2>/dev/null || echo "Windows")
-  printf '{"os": "%s"}\n' "$os"
-  EOF
-    ]
-}
-
 data "external" "graph_token" {
   program = [  
-    "/bin/sh",
+    "bash",
     "-c", 
     "az account get-access-token --resource 'https://graph.microsoft.com' --query '{accessToken: accessToken}' --output json"
     ]
@@ -44,9 +33,9 @@ locals {
   # graph_user_permissions_lookup_rev = { for friendly, id in local.graph_user_permissions_lookup : id => friendly }
 }
 
-output "debug_os" {
-  value = data.external.os.result
-}
+# output "debug_os" {
+#   value = data.external.os.result
+# }
 
 # output token {
 #   value = data.external.graph_token.result.accessToken
