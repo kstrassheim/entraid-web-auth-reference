@@ -20,7 +20,7 @@
                 "PYTHONPATH": "${workspaceFolder}/backend"
             },
             "cwd": "${workspaceFolder}/backend",
-            "preLaunchTask": "Build Vite Frontend"
+            // "preLaunchTask": "Build Vite Frontend"
         },
         {
             "name": "Vite Dev Server",

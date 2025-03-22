@@ -8,15 +8,11 @@ from dotenv import load_dotenv
 load_dotenv()
 # get routers
 from api import api_router
-from auth import auth_router
 from common import azure_scheme
 # Init FastAPI
 app = FastAPI()
 origins = ["http://localhost:5173", "localhost:5173"]
 app.add_middleware(CORSMiddleware,allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-
-# Register Auth Router
-app.include_router(auth_router, prefix="/auth")
 
 # Register API Router
 app.include_router(api_router, prefix="/api")

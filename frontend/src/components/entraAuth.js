@@ -1,24 +1,12 @@
 import { LogLevel } from '@azure/msal-browser';
-import { backendUrl, frontendUrl, entra } from "../config";
+import { frontendUrl } from "../config";
+import tfconfig from '../../terraform.config.json' assert { type: 'json' };
 
-const initEntraConfig = async () => {
-  const response = await fetch(`${backendUrl}/auth/entra-config`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch Entra config");
-  }
-  const {tenant_id, client_id} = await response.json();
-  entra.clientId = client_id;
-  entra.tenantId = tenant_id;
-  entra.loaded = true;
-  return;
-}
-
-export const msalConfig = async () =>{
-  await initEntraConfig();
+export const msalConfig = () =>{
   return {
     auth: {
-      clientId: entra.clientId,
-      authority: `https://login.microsoftonline.com/${entra.tenantId}/v2.0`,
+      clientId: tfconfig.client_id.value,
+      authority: `https://login.microsoftonline.com/${tfconfig.tenant_id.value}/v2.0`,
       redirectUri: frontendUrl,
       postLogoutRedirectUri: frontendUrl+'/post-logout',
     },
@@ -38,13 +26,13 @@ export const msalConfig = async () =>{
 };
 
 export const loginRequest = {
-  scopes: ['User.Read'],
+  scopes: [tfconfig.requested_graph_api_application_permissions.value],
 };
 
 export const retreiveToken = async (instance, extraScopes = []) => {
   const account = instance.getActiveAccount();
   const tokenResponse = await instance.acquireTokenSilent({
-    scopes: [`api://${entra.clientId}/user_impersonation`, ...extraScopes],
+    scopes: [tfconfig.oauth2_permission_scope_uri.value, ...extraScopes],
     account: account,
   });
   return tokenResponse.accessToken;

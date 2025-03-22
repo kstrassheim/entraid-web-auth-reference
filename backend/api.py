@@ -1,6 +1,6 @@
 import jwt 
 from fastapi import APIRouter, Security, HTTPException#, Depends, HTTPException, Header
-from common import azure_scheme
+from common import azure_scheme, scopes
 import logging
 import requests
 
@@ -20,12 +20,12 @@ def check_user_roles(token, required_roles):
         raise HTTPException(status_code=403, detail="You do not have access to this resource")
 
 @api_router.get("/user-data")
-async def get_user_data(token=Security(azure_scheme, scopes=["user_impersonation"])):
+async def get_user_data(token=Security(azure_scheme, scopes=scopes)):
     return {"message": "Hello from API"}
 
 
 @api_router.get("/admin-data")
-async def get_admin_data(token=Security(azure_scheme, scopes=["user_impersonation"])):
+async def get_admin_data(token=Security(azure_scheme, scopes=scopes)):
     check_user_roles(token, ["Admin"])
         # Extract the access token from the Security token
     access_token = getattr(token, "access_token") 

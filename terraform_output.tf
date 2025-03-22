@@ -1,3 +1,8 @@
+output "env" {
+  value = var.env
+  description = "The current deployment environment"
+}
+
 output "web_url" {
   value = "https://${azurerm_linux_web_app.web.default_hostname}"
   description = "The URL of the deployed web app"
@@ -25,6 +30,11 @@ output "tenant_id" {
 output "oauth2_permission_scope_uri" {
   description = "The full URI for the defined OAuth2 permission scope"
   value       = "api://${azuread_application.reg.client_id}/${tolist(azuread_application.reg.api[0].oauth2_permission_scope)[0].value}"
+}
+
+output "oauth2_permission_scope" {
+  description = "The OAuth2 permission scope"
+  value       = tolist(azuread_application.reg.api[0].oauth2_permission_scope)[0].value
 }
 
 output "app_roles_allowed_member_types_list" {
