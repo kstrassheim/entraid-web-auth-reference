@@ -16,6 +16,8 @@ on:
 
 jobs:
   terraform:
+    environment:
+      name: 'dev'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -30,7 +32,7 @@ jobs:
           # auth-type: SERVICE_PRINCIPAL
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
       - name: Set environment variables for Terraform
         run: |
