@@ -7,9 +7,11 @@
         {
             "name": "FastAPI",
             "type": "python",
-            "command": "pkill -f uvicorn || true",
+            // "command": "pkill -f uvicorn || true",
+            "command": "taskkill /IM uvicorn.exe /F || echo 'No uvicorn process found'",
             "request": "launch",
             "module": "uvicorn",
+            "python": "${workspaceFolder}/backend/venv/Scripts/python.exe",
             "args": [
                 "main:app",        // Adjust to your FastAPI entry point
                 "--reload"
@@ -17,7 +19,7 @@
             "jinja": true,
             "justMyCode": true,
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/backend"
+                "PYTHONPATH": "${workspaceFolder}/backend/"
             },
             "cwd": "${workspaceFolder}/backend",
             // "preLaunchTask": "Build Vite Frontend"

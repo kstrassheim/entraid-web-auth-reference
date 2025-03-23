@@ -127,18 +127,34 @@ resource "azuread_application" "reg" {
     }
   }
 
-  web {
-    homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
-    logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
+  # Add a single-page application block
+  single_page_application {
+    # URIs used by your SPA (e.g., React, Angular, Vue) in development or production
+   # Add the local dev uris here 8000 for FASTAPI Backend and 5173 for Vite/React Frontend
 
-    # Add the local dev uris here 8000 for FASTAPI Backend and 5173 for Vite/React Frontend
+    # homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
+    # logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
+
     redirect_uris = var.env == "dev" ? ["http://localhost:8000/", "http://localhost:5173/"] : []
 
-    implicit_grant {
-      access_token_issuance_enabled = false
-      id_token_issuance_enabled     = false
-    }
+    # implicit_grant {
+    #   access_token_issuance_enabled = false
+    #   id_token_issuance_enabled     = false
+    # }
   }
+
+  # web {
+  #   homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
+  #   logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
+
+  #   # Add the local dev uris here 8000 for FASTAPI Backend and 5173 for Vite/React Frontend
+  #   redirect_uris = var.env == "dev" ? ["http://localhost:8000/", "http://localhost:5173/"] : []
+
+  #   implicit_grant {
+  #     access_token_issuance_enabled = false
+  #     id_token_issuance_enabled     = false
+  #   }
+  # }
 }
 
 # Generate Enterprise Application (Prinicpal) out of App Registration 

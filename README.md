@@ -31,7 +31,7 @@ On linux
 ```
 On Windows
 ```bash
-./init.cmd
+./init.ps1
 ```
 4. Make sure the name (venv) username appears in the console 
 5. Download and install VSCode Python Plugins for debugging experience.

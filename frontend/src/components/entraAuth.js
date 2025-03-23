@@ -25,9 +25,9 @@ export const msalConfig = () =>{
     },
   };
 };
-
+const permission = tfconfig.requested_graph_api_delegated_permissions.value
 export const loginRequest = {
-  scopes: [tfconfig.requested_graph_api_application_permissions.value],
+  scopes: tfconfig.requested_graph_api_delegated_permissions.value,
 };
 
 export const retreiveToken = async (instance, extraScopes = []) => {
