@@ -1,0 +1,63 @@
+{
+  "app_roles_allowed_member_types_list": {
+    "sensitive": false,
+    "type": "string",
+    "value": "Application, User"
+  },
+  "application_insights_connection_string": {
+    "sensitive": false,
+    "type": "string",
+    "value": "InstrumentationKey=f3c9eafd-fa67-4c28-9db8-cbc2736f02fb;IngestionEndpoint=https://westeurope-3.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/;ApplicationId=af37bdb1-1a21-46ac-b666-cdb076d66db9"
+  },
+  "application_insights_instrumentation_key": {
+    "sensitive": false,
+    "type": "string",
+    "value": "f3c9eafd-fa67-4c28-9db8-cbc2736f02fb"
+  },
+  "client_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "32987e48-c6ce-43ca-86a4-7abb7ec84966"
+  },
+  "oauth2_permission_scope": {
+    "sensitive": false,
+    "type": "string",
+    "value": "user_impersonation"
+  },
+  "oauth2_permission_scope_uri": {
+    "sensitive": false,
+    "type": "string",
+    "value": "api://32987e48-c6ce-43ca-86a4-7abb7ec84966/user_impersonation"
+  },
+  "requested_graph_api_application_permissions": {
+    "sensitive": false,
+    "type": [
+      "list",
+      "string"
+    ],
+    "value": [
+      "Directory.Read.All"
+    ]
+  },
+  "requested_graph_api_delegated_permissions": {
+    "sensitive": false,
+    "type": [
+      "list",
+      "string"
+    ],
+    "value": [
+      "User.Read.All",
+      "Group.Read.All"
+    ]
+  },
+  "tenant_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "1e1e851f-618f-40d4-9c2d-45355ad039a9"
+  },
+  "web_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://entraid-web-auth-reference-app-dev.azurewebsites.net"
+  }
+}
