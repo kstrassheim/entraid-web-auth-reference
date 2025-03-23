@@ -1,37 +1,42 @@
 # Entra Id Web Auth Reference
-The web app provides a authentication to Azure Entra ID and role checking. It is useful to build admin pages out of scratch.
+The web app provides a authentication to Azure Entra ID and role checking and full automatic terraform resource deployment. It is useful to build admin pages out of scratch. You do not have to setup anything on specific resources. Setup like env variables becomes obsolete here. Just create the resource group, connect github to it, connect terraform states and deploy. 
 ## Purpose detail
-The app which fulfills the following requirements for a 
+This project fulfills the following requirements.
+### From this project [EntraId-Web-Auth-Reference]https://github.com/kstrassheim/entraid-web-auth-reference 
+- Create the whole infrastructure with terraform
+- Provide all required settings for the environment via terraform output
+- Build and connect all the applications according to the terraform config for each environment. __Without manual setup of environment variables__
+- Deploy and connect to the Authentication automatically
+
+### From [FastAPI-Reference](https://github.com/kstrassheim/fastapi-reference)
 - Quick to initialize
 - Debug with breakpoints of Frontend and Backend and just in time compiler
 - Debug by starting F5 in VSCode (Starting chrome also)
 - Deployment of a productive version with precompiled frontend server
-- Deployment to Azure App Service Free Plan with Actions on Pull Request
 
 ## Prerequisites
 Here are the prerequisites that you have to install before running the app
-1. The app requires python3 to be installed on the machine with venv. To install it on on Ubuntu (WSL) just type. On Windows just install from windows store https://apps.microsoft.com/detail/9PNRBTZXMB4Z?hl=en-us&gl=CH&ocid=pdpshare 
-```
+1. The app requires python3 to be installed on the machine with venv. To install it on on Ubuntu (WSL) just type. On Windows just install from windows store https://apps.microsoft.com/detail/9PNRBTZXMB4Z?hl=en-us&gl=CH&ocid=pdpshare. 
+```sh
 sudo apt update
 sudo apt install python3 python3-venv python3-pip
 ```
 2. Then clone the repository
-3. Go into the backend folder `cd ./backend`
-4. init venv and install pip packages into it by typing 
+3. Go into the project folder and run init script (for detail read that script)
+
 On linux
-```
-python3 -m venv venv
-source ./venv/bin/activate
-pip install -r requirements.txt
+```sh
+./init.sh
 ```
 On Windows
+```bash
+./init.cmd
 ```
-python -m venv venv
-.\venv\Scripts\activate.bat
-pip install -r requirements.txt
-```
-5. Go into the frontend folder `cd ./frontend`
-6. Run `npm install` which will download and install all frontend package5
+4. Make sure the name (venv) username appears in the console 
+5. Download and install VSCode Python Plugins for debugging experience.
+6. In VSCode go to Debug Settings and select "Full Stack Debug"
+7. Press key F5 to run the project which should start with a new browser and show you the page
+
 ### Architecture
 Here is the simple architecture description
 #### ./backend
@@ -69,20 +74,45 @@ To generate a production compile of the frontend
 1. Navigate to frontend folder `cd ./frontend`
 2. Type `npm run build`
 3. It will create a build into ./__backend__/dist folder where fast-api will start it. `./backend/dist`
+## Azure Setup
+Create an empty resource group and make sure that you are at least Contributor of it.
+## Github Setup
+The github actions require permissions to create the structure with terraform. Do the following steps to create and assign a ServicePricipal to that specific Github Project' Environment if neccessary.
+1. Go to your Project's (Env) Resouce Group click on Create and Create a User assigned Managed Identity. There is no special setup on this point. Just create it.
+2. Open the Managed Identity goto Settings/Federated Credentials and click Add Credential and select the Federated credential scenario "Configure a Github issued token..."
+3. Add your Organization/Personal Accountname, enter the repository name and __environment__ name as Entity. Also choose a credential name for it.
+4. Click on Add
+5. Go to overview Page and save the following IDs from it
+  - Client ID
+  - Subcription ID
+  - Tenant ID (Open JSON View on the top right for that)
+6. Go on Github and open you repository and open Settings
+7. In Environments select "new environment" and enter the name of the __environment__ you choosen in the federated credential. then click on configure environment.
+8. Enter the following Environment __Secrets__ which you saved from the managed identites. The key names have to be exactly like that. The values you got from the federated credential.
+  - AZURE_CLIENT_ID=[Client ID]
+  - AZURE_SUBSCRIPTION_ID=[Subcription ID]
+  - AZURE_TENANT_ID=[Tenant ID] 
+9. make sure that you have set up the environment name in any job that requires these credentials.
+  ```yaml
+    jobs:
+      terraform:
+        environment:
+          name: 'dev'
+  ```
+10. In the jobs where you need them add the with statement to make sure they are provided. The services should usually auto grab them otherwise you can map them.
+  ```yaml
+      with:
+        # auth-type: SERVICE_PRINCIPAL
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ```
+11. You are done here. Run the Action and check if it can authorize on azure for it.
+## Azure Storage Setup
+When you have a Storage Account for all Terraform states of all projects on your Tenant then create a Container `[projectname_env]` and
+1. Check if terraform azurerm backend is configured with use_azuread_auth = true
+2. Assign yourself as **Storage Data Contributor** to the container
+3. Assign the Github Managed Identity also **Storage Data Contributor** Permissions to the container
 
-## Azure Web App Setup
-This section handles how to setup the Azure App Service
-1. Create a Azure Web App Service. Select F1 Free Tier as it is enough for this app. 
-2. You can select Github as Deploy provider and it will also create you a Action and a user managed identity for deployment. Please make sure that you replace the file afterward with this file from this project to get the correct settings `/.github/deploy_to_azure_app_service.yml` file afterward. You should just preseve copy this block in line 90 from your generated file as it provides the deployment user identites.
-```
- - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_07118B6326EE492693A4582BDAE9294E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_98091920E4D5432E9786AA6ADFC34B54 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7BFCF659655641B8987A25BBEF11D64A }}
-```
-2.In Azure Portal go to your App in Settings/Configuration you have to setup the Startup Command as
-```
-gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile '-' --error-logfile '-' main:app
-```
+## Terraform deployment
+When you have set up everything then terraform will do the whole deployment of the resources and the web application. 
