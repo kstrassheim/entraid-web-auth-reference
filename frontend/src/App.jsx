@@ -1,6 +1,5 @@
 import { Routes, Route, Link } from "react-router-dom";
 import './App.css';
-import logo from './assets/logo.png';
 // get the components
 import NotFound from './404';
 import EntraLogon from './components/EntraLogon';
@@ -18,7 +17,7 @@ function App() {
       <nav className="navbar">
         <div className="navbar-logo">
           <a href="https://github.com/kstrassheim/fastapi-reference" target="_blank">
-            <img src={logo} className="logo" alt="logo" />
+            <img src={__LOGO_PATH__} className="logo" alt="logo" />
           </a>
           Entra Auth
         </div>
