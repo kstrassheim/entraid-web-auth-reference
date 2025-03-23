@@ -96,6 +96,13 @@ jobs:
             cat backend/terraform.config.json
           else
             echo "Error: terraform_output.json not found!"
+            cd frontend
+            echo "Frontend Folder:
+            ls -a
+            cd ..
+            cd backend
+            echo "Backend Folder:
+            ls -a
             exit 1
           fi
 
