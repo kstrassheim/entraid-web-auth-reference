@@ -5,6 +5,9 @@
 name: Build and deploy Python app to Azure Web App - fast-api-reference
 
 on:
+  push:
+    branches:
+      - entra-auth
   pull_request:
     types: [closed]
     branches:
@@ -23,12 +26,12 @@ jobs:
       - name: Download npm
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Create and start virtual environment
         run: |
@@ -68,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: 'dev'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write #This is required for requesting the JWT
@@ -87,14 +90,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_07118B6326EE492693A4582BDAE9294E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_98091920E4D5432E9786AA6ADFC34B54 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7BFCF659655641B8987A25BBEF11D64A }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID  }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID  }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'fast-api-reference'
+          app-name: 'entraid-web-auth-reference-dev'
           slot-name: 'Production'
           
