@@ -85,7 +85,7 @@ jobs:
           # Check if file exists and is valid JSON
           if [ -f "terraform_output.json" ]; then
             echo "Terraform output file found"
-            
+            ls -a
             # For backend - can use the original format
             cp terraform_output.json backend/terraform.config.json
             
