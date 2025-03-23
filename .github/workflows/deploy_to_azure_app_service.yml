@@ -52,12 +52,12 @@ jobs:
           terraform apply -auto-approve
 
           # Ensure we're creating a fresh output file
-          rm -f terraform_output.json
+              rm -f terraform_output.json
+          # Execute terraform output and save to temp file
+          terraform output -json > terraform_output.raw
           
-          # Execute terraform output without capturing command text
-          {
-            terraform output -json > terraform_output.json
-          } 2>/dev/null
+          # Remove the first line (command echo) and save to final file
+          sed '1d' terraform_output.raw > terraform_output.json
           
           # Verify JSON validity and fail if invalid
           if jq . terraform_output.json > /dev/null 2>&1; then
