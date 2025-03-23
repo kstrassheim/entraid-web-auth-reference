@@ -9,9 +9,9 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         // Apply logo flip on test and prod
-        { src: `logo_src/(${tfconfig.env.value})/*.png`, dest: 'public' },
-        { src: `logo_src/(${tfconfig.env.value})/favicon.ico`, dest: 'public' },
-        { src: `logo_src/(${tfconfig.env.value})/logo.png`, dest: 'src/assets' }
+        { src: `/logo_src/${tfconfig.env.value}/*.png`, dest: 'public' },
+        { src: `/logo_src/${tfconfig.env.value}/favicon.ico`, dest: 'public' },
+        { src: `/logo_src/${tfconfig.env.value}/logo.png`, dest: 'src/assets' }
       ]
     })
   ],
