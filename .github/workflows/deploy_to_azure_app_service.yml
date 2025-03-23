@@ -47,16 +47,15 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: 
-          - terraform apply -auto-approve
-          - terraform output -json > terraform_output.json
+        run: |
+          terraform apply -auto-approve
+          terraform output -json > terraform_output.json
         
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: terraform config
-          path:
-           - terraform_output.json
+          path: terraform_output.json
 
   build:
     runs-on: ubuntu-latest
