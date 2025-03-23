@@ -147,7 +147,7 @@ resource "azuread_application" "reg" {
     # homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
     # logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
 
-    redirect_uris = var.env == "dev" ? ["http://localhost:8000/", "http://localhost:5173/"] : []
+    redirect_uris = var.env == "dev" ? ["https://${azurerm_linux_web_app.web.default_hostname}", "http://localhost:8000/", "http://localhost:5173/"] : []
 
     # implicit_grant {
     #   access_token_issuance_enabled = false
