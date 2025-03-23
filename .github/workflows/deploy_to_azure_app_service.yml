@@ -72,10 +72,27 @@ jobs:
           name: terraform config
           path: .
 
-      - name: Copy Terraform config to frontend and backend
+      - name: Copy and format Terraform config to frontend and backend
         run: |
-          cp terraform_output.json frontend/terraform.config.json
-          cp terraform_output.json backend/terraform.config.json
+          # Check if file exists and is valid JSON
+          if [ -f "terraform_output.json" ]; then
+            echo "Terraform output file found"
+            
+            # For frontend - convert to format importable by Vite
+            jq '.' terraform_output.json > frontend/terraform.config.json
+            
+            # For backend - can use the original format
+            cp terraform_output.json backend/terraform.config.json
+            
+            # Validate the JSON files
+            echo "Frontend JSON:"
+            cat frontend/terraform.config.json
+            echo "Backend JSON:"
+            cat backend/terraform.config.json
+          else
+            echo "Error: terraform_output.json not found!"
+            exit 1
+          fi
 
       - name: Download npm
         uses: actions/setup-python@v5
