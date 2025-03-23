@@ -3,6 +3,8 @@ from fastapi_azure_auth.auth import SingleTenantAzureAuthorizationCodeBearer
 import json
 
 tfconfig = None
+logger = None
+
 with open("terraform.config.json", "r") as config_file:
     tfconfig = json.load(config_file)
 # define scope to use in the API   
