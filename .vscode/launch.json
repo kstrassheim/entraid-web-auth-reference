@@ -10,7 +10,8 @@
             "request": "launch",
             "module": "uvicorn",
             "cwd": "${workspaceFolder}/backend",
-            "args": [ "main:app","--reload", "--port", "8000"]
+            "args": [ "main:app","--reload", "--port", "8000"],
+            "preLaunchTask": "Build Vite Frontend"
           },
         {
             "name": "Vite Dev Server",

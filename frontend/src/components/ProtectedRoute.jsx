@@ -14,9 +14,11 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
 
   // Get user roles from the token claims (depends on your configuration)
   const userRoles = account.idTokenClaims?.roles || [];
-  
-  // Check if the user has all required roles
-  const hasAccess = requiredRoles.every(role => userRoles.includes(role));
+  // Normalize arrays before comparison
+  const normalizedUserRoles = userRoles.map(r => r.toLowerCase());
+  const normalizedRequiredRoles = requiredRoles.map(r => r.toLowerCase());
+
+  const hasAccess = normalizedRequiredRoles.every(role => normalizedUserRoles.includes(role));
   
   if (!hasAccess) {
     appInsights.trackEvent({ name: 'Protected Route - Redirecting to Access denied page' });

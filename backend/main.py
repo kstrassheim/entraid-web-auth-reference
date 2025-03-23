@@ -10,21 +10,18 @@ import datetime
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.fastapi.fastapi_middleware import FastAPIMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-import logging
+
 # load environment variables
 from dotenv import load_dotenv
 load_dotenv()
 # get routers
 from api import api_router
-from common import azure_scheme, tfconfig, logger
+
 
 # Init FastAPI
 app = FastAPI()
-#logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string=tfconfig['application_insights_connection_string']['value']))
 
+from common import azure_scheme, tfconfig, logger
 # Only add custom CORS origins if in development
 origins = ["http://localhost:5173", "localhost:5173"] if tfconfig["env"]["value"] == "dev" else []
 app.add_middleware(CORSMiddleware,allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])

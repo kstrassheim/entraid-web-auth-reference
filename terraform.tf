@@ -60,8 +60,16 @@ resource "azurerm_application_insights" "log" {
 # Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
   display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
-  logo_image       = filebase64("${path.module}/frontend/src/assets/logo.png")
+  logo_image       = filebase64("${path.module}/frontend/public/logo.png")
 
+  # !! ABSOLUTELY IMPORTANT OTHERWISE - IDENTIFIER HAS TO BE CONFIGURED IN SEPERATE OBJECT BELOW AND THIS HAS TO BE SET !!
+  # !! OTHERWISE IT WILL RECREATE AGAIN AND AGAIN WITHOUT SETTING THE IDENTIFIER URI WHAT WILL DISABLE AUTHENTICATION FOR CLIENTS !!!
+  lifecycle {
+    ignore_changes = [
+      identifier_uris,
+    ]
+  }
+  
   # Assign the ownership to the deployment managed identity or you will get conflicts between local and pipeline deployments
   owners           = [data.azuread_service_principal.deploy_managed_identity_pricipal.object_id]
   // Single Tenant
@@ -142,19 +150,12 @@ resource "azuread_application" "reg" {
     #   id_token_issuance_enabled     = false
     # }
   }
+}
 
-  # web {
-  #   homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
-  #   logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
 
-  #   # Add the local dev uris here 8000 for FASTAPI Backend and 5173 for Vite/React Frontend
-  #   redirect_uris = var.env == "dev" ? ["http://localhost:8000/", "http://localhost:5173/"] : []
-
-  #   implicit_grant {
-  #     access_token_issuance_enabled = false
-  #     id_token_issuance_enabled     = false
-  #   }
-  # }
+resource "azuread_application_identifier_uri" "app_identifier" {
+  application_id = azuread_application.reg.id
+  identifier_uri = "api://${azuread_application.reg.client_id}"
 }
 
 # Generate Enterprise Application (Prinicpal) out of App Registration 
