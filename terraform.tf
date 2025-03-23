@@ -37,7 +37,7 @@ resource "azurerm_linux_web_app" "web" {
     application_stack {
         python_version = "3.12"
     }
-    
+
     # Startup command for FASTAPI
     app_command_line  = "gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile '-' --error-logfile '-' main:app"
     
@@ -50,7 +50,7 @@ resource "azurerm_linux_web_app" "web" {
   app_settings = {
     # "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.log.instrumentation_key
     // !!! IMPORTANT or python site will not build !!!
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"= true'
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"= true
   }
 }
 
