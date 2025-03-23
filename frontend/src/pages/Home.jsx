@@ -1,63 +1,39 @@
-import { useState, useEffect } from 'react'
-import logo from '../assets/logo.png'
-import { Link, useNavigate } from 'react-router-dom' 
+import { useState, useEffect, useRef } from 'react'
 import './Home.css'
-import { apiHello } from '../components/api'
-import { fetchToken, logout, login } from "../components/auth";
+import { getUserData } from '../components/api'
+import { useMsal } from '@azure/msal-react';
+import {env} from '../config'
+import appInsights from '../components/appInsights';
 
-function Home() {
-  const [count, setCount] = useState(0);
+const Home = () => {
+  const { instance } = useMsal();
   const [data, setData] = useState(null);
-  const navigate = useNavigate();
-  
-  const setCountFunc = () => {
-    setCount(count + 1);
-  }
-
-  const logoutFunc = async () => {
-      await logout();
-      navigate('/');
-  }
+  const initFetchCompleted = useRef(false);
 
   const fetchData = async () => {
-    const data = await apiHello()
-    setData(data)
+    const result = await getUserData(instance);
+    setData(result)
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { 
+    if (!initFetchCompleted.current) {
+      appInsights.trackEvent({ name: 'Home - Fetch data started' });
+      fetchData();
+      appInsights.trackEvent({ name: 'Home - Fetch data completed' });
+      initFetchCompleted.current = true;
+    }
+  }, [])
 
   return (
     <>
       <div>
-          <a href="https://github.com/kstrassheim/fastapi-reference" target="_blank">
-            <img src={logo} className="logo " alt="logo" />
-          </a>
-      </div>
-      <h1>FastAPI-Reference</h1>
-      <div className="login-link">
-        {
-                fetchToken() ? (<>
-                <p>you are logged in</p>
-                <button onClick={logoutFunc}>Logout</button>
-                </>
-              ) 
-              : 
-              <></>
-          }
-      </div>
-      <div className="card">
-        <button onClick={setCountFunc}>
-          count is {count}
-        </button>
+        <h1>Home Page</h1>
+        <p>Environment:{env}</p>
+        <h2>{data ? data.message : 'Loading...'}</h2>
+        <button onClick={fetchData}>Reload Data</button>
         <p className="read-the-docs">
           Click on the Logo to learn more
         </p>
-        <p>{import.meta.env.MODE}</p>
-        <h2>
-          {data ? data.message : 'Loading...'}
-        </h2>
       </div>
     </>
   )
