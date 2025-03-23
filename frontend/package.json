@@ -14,7 +14,8 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.2.1",
     "@azure/msal-browser": "^4.7.0",
-    "@azure/msal-react": "^3.0.6"
+    "@azure/msal-react": "^3.0.6",
+    "@microsoft/applicationinsights-web": "^2.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

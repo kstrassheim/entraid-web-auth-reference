@@ -2,7 +2,7 @@ import React from 'react';
 import { useMsal , AuthenticatedTemplate, UnauthenticatedTemplate} from '@azure/msal-react';
 import { loginRequest } from './entraAuth';
 import { useNavigate } from 'react-router-dom';
-import {frontendUrl} from '../config'
+import appInsights from './appInsights';
 
 const EntraLogon = () => {
   const { instance } = useMsal();
@@ -10,6 +10,7 @@ const EntraLogon = () => {
 
   const logonFunc = async (forcePopup = false) => {
     try {
+      appInsights.trackEvent({ name: 'Logon started' });
       let loginRequestParam = forcePopup ? { ...loginRequest, prompt: "select_account" } : loginRequest;
       const response = await instance.loginPopup(loginRequestParam);
       instance.setActiveAccount(response.account);
@@ -21,7 +22,8 @@ const EntraLogon = () => {
       navigate(redirectPath, { replace: true });
 
     } catch (error) {
-      console.error("Login failed:", error);
+      appInsights.trackException({ error });
+      console.error("Logon failed:", error);
     }
   };
 
@@ -30,9 +32,6 @@ const EntraLogon = () => {
     sessionStorage.clear();
     localStorage.clear();
     await instance.logoutPopup();
-    // {
-    //   postLogoutRedirectUri : `${frontendUrl}/post-logout`
-    // }
   }
 
   return <div className="logon-buttons">

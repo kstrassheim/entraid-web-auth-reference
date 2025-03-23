@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
+import appInsights from './appInsights';
 
 const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const { instance } = useMsal();
@@ -18,6 +19,7 @@ const ProtectedRoute = ({ children, requiredRoles = [] }) => {
   const hasAccess = requiredRoles.every(role => userRoles.includes(role));
   
   if (!hasAccess) {
+    appInsights.trackEvent({ name: 'Protected Route - Redirecting to Access denied page' });
     sessionStorage.setItem("redirectPath", location.pathname);
     return <Navigate to="/access-denied" replace state={{ requiredRoles }} />;
   }

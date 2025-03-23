@@ -39,6 +39,9 @@ resource "azurerm_linux_web_app" "web" {
     }
     # Startup command for FASTAPI
     app_command_line  = "gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile '-' --error-logfile '-' main:app"
+    # Health check configuration
+    health_check_path = "/health"
+    health_check_eviction_time_in_min = 10
   }
 
   # Add the telemetry instrumentation key as an app setting

@@ -3,6 +3,7 @@ import './Home.css'
 import { getUserData } from '../components/api'
 import { useMsal } from '@azure/msal-react';
 import {env} from '../config'
+import appInsights from '../components/appInsights';
 
 const Home = () => {
   const { instance } = useMsal();
@@ -16,7 +17,9 @@ const Home = () => {
 
   useEffect(() => { 
     if (!initFetchCompleted.current) {
+      appInsights.trackEvent({ name: 'Home - Fetch data started' });
       fetchData();
+      appInsights.trackEvent({ name: 'Home - Fetch data completed' });
       initFetchCompleted.current = true;
     }
   }, [])

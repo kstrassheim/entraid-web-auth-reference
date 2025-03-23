@@ -1,7 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import appInsights from './appInsights';
 
 const AccessDenied = () => {
+  appInsights.trackEvent({ name: 'Access Denied page' });
   const location = useLocation();
   const requiredRoles = location.state?.requiredRoles || [];
   return (

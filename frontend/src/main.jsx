@@ -7,6 +7,10 @@ import App from './App.jsx'
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from './components/entraAuth.js';
+import appInsights from './components/appInsights'; // This will initialize Application Insights
+
+// init Application Insights as soon as the app starts
+appInsights.trackPageView({ name: window.location.pathname });
 
 const msalConfigVal= msalConfig();
 const msalInstance = new PublicClientApplication(msalConfigVal);

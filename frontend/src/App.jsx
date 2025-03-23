@@ -8,8 +8,9 @@ import EntraProfile from './components/EntraProfile';
 import AccessDenied from './components/AccessDenied';
 import ProtectedRoute from "./components/ProtectedRoute";
 // get the pages
-import Home from './pages/Home';  
-import Admin from './pages/Admin';  
+import Home from './pages/Home';
+import Admin from './pages/Admin';
+//import appInsights from './components/appInsights';
 
 function App() {
   return (

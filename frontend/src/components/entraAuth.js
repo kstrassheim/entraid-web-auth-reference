@@ -1,6 +1,7 @@
 import { LogLevel } from '@azure/msal-browser';
 import { frontendUrl } from "../config";
 import tfconfig from '../../terraform.config.json' assert { type: 'json' };
+import appInsights from './appInsights';
 
 export const msalConfig = () =>{
   return {
@@ -30,6 +31,7 @@ export const loginRequest = {
 };
 
 export const retreiveToken = async (instance, extraScopes = []) => {
+  appInsights.trackEvent({ name: 'MSAL Retrieving Token' });
   const account = instance.getActiveAccount();
   const tokenResponse = await instance.acquireTokenSilent({
     scopes: [tfconfig.oauth2_permission_scope_uri.value, ...extraScopes],

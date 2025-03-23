@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import './Home.css'
 import { getAdminData } from '../components/api'
 import { useMsal } from '@azure/msal-react';
+import appInsights from '../components/appInsights';
 
 const Admin = () => {
   const { instance } = useMsal()
@@ -15,8 +16,10 @@ const Admin = () => {
 
   useEffect(() => { 
     if (!initFetchCompleted.current) {
+      appInsights.trackEvent({ name: 'Admin - Fetch data started' });
       fetchData();
       initFetchCompleted.current = true;
+      appInsights.trackEvent({ name: 'Admin - Fetch data completed' });
     }
   }, [])
 

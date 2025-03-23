@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { loginRequest } from './entraAuth';
 import dummy_avatar from '../assets/dummy-avatar.jpg'
+import appInsights from './appInsights'; 
 
 // Custom function to receive the profile photo
 export const getProfilePhoto = async (instance, activeAccount) => {
   try {
+    appInsights.trackEvent({ name: 'Profile - Getting profile image' });
     if (!activeAccount) return;
     const tokenResponse = await instance.acquireTokenSilent({
       ...loginRequest,
@@ -24,6 +26,7 @@ export const getProfilePhoto = async (instance, activeAccount) => {
       console.error('Failed to fetch profile photo:', response.statusText);
     }
   } catch (error) {
+    appInsights.trackException({ error });
     console.error('Error fetching profile photo:', error);
   }
 };
