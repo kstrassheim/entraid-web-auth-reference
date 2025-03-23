@@ -48,12 +48,15 @@ jobs:
 
       - name: Terraform Apply
         run: |
+         
           # Run terraform
           terraform apply -auto-approve
           # Capture output in a variable instead of direct redirection
           echo "Capturing Terraform output..."
           TERRAFORM_OUTPUT=$(terraform output -json)
-          
+
+          # Disable command echoing first otherwise will produce additional line in JSON making it invalid
+          set +x
           # Write captured output to file
           echo "$TERRAFORM_OUTPUT" > terraform_output.json
           
