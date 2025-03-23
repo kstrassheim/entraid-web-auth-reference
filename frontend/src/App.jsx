@@ -6,6 +6,7 @@ import EntraLogon from './components/EntraLogon';
 import EntraProfile from './components/EntraProfile';
 import AccessDenied from './components/AccessDenied';
 import ProtectedRoute from "./components/ProtectedRoute";
+import logo from './assets/logo.png';
 // get the pages
 import Home from './pages/Home';
 import Admin from './pages/Admin';
@@ -17,7 +18,7 @@ function App() {
       <nav className="navbar">
         <div className="navbar-logo">
           <a href="https://github.com/kstrassheim/fastapi-reference" target="_blank">
-            <img src={__LOGO_PATH__} className="logo" alt="logo" />
+            <img src={logo} className="logo" alt="logo" />
           </a>
           Entra Auth
         </div>
