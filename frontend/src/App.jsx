@@ -16,7 +16,7 @@ function App() {
     <>
       <nav className="navbar">
         <div className="navbar-logo">
-          <a href="https://github.com/kstrassheim/fastapi-reference" target="_blank">
+          <a href="https://github.com/kstrassheim/entraid-web-auth-reference" target="_blank">
             <img src='logo.png' className="logo" alt="logo" />
           </a>
           Entra Auth
