@@ -4,7 +4,7 @@ import tfconfig from '../../terraform.config.json' assert { type: 'json' };
 import appInsights from './appInsights';
 
 export const msalConfig = () =>{
-  // console.log("redirect uri:" + frontendUrl);
+  console.log("redirect uri:" + frontendUrl);
   return {
     auth: {
       clientId: tfconfig.client_id.value,
