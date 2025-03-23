@@ -55,7 +55,10 @@ jobs:
           terraform output -json > terraform_output.raw
           
           # Remove the first line (command echo) and save to final file
-          sed '1d' terraform_output.raw > terraform_output.json
+          sed '1d' terraform_output.raw > terraform_output.f1
+
+          # Remove all lines starting with :: and save to final file
+          grep -v "^::" terraform_output.f1 > terraform_output.json
           
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
