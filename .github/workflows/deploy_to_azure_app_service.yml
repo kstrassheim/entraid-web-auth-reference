@@ -98,6 +98,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'entraid-web-auth-reference-dev'
+          app-name: 'entraid-web-auth-reference-app-dev'
           slot-name: 'Production'
           
