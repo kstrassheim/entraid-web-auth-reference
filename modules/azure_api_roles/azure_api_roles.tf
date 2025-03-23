@@ -3,7 +3,7 @@ module azure_resource_query {
   sub_url = "v1.0/servicePrincipals"
   parameters = "&%24filter=appId%20eq%20'00000003-0000-0000-c000-000000000000'&&%24select=appRoles,oauth2PermissionScopes"
 }
-# REMARK DOES NOT WORK WHEN DEPYED WITH A MANGED IDENTITY - VIA GITHUB FOR EXAMPLE - USE STATIC FILE and DOWNLOAD MANUALY INSTEAD
+# REMARK you have to Assign Directory.Read.All to the application  or Azure AD "Directory Reader" permissions to the deployment pricipal for this to work
 locals {
   api_permissions = module.azure_resource_query.response
   application_roles_dictionary = { 

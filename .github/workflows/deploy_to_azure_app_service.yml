@@ -47,7 +47,16 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: 
+          - terraform apply -auto-approve
+          - terraform output -json > terraform_output.json
+        
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform config
+          path:
+           - terraform_output.json
 
   build:
     runs-on: ubuntu-latest
@@ -57,6 +66,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download Terraform config artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform config
+          path: .
+
+      - name: Copy Terraform config to frontend and backend
+        run: |
+          cp terraform_output.json frontend/terraform.config.json
+          cp terraform_output.json backend/terraform.config.json
 
       - name: Download npm
         uses: actions/setup-python@v5
@@ -113,15 +133,31 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - name: Download artifact from build job
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: python-app
 
+      - name: Download Terraform config artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform config
+          path: ./terraform-config
+
+      - name: Extract web app name from terraform config
+        id: extract-app-name
+        run: |
+          # Install jq if needed
+          sudo apt-get install -y jq
+          
+          # Read the web app name from terraform_output.json and set it as output
+          APP_NAME=$(jq -r '.web_app_name.value' ./terraform-config/terraform_output.json)
+          echo "web_app_name=$APP_NAME" >> $GITHUB_OUTPUT
+          echo "Using web app name: $APP_NAME"
+
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -129,10 +165,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID  }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: 'Deploy to Azure Web App named by the terraform config file'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'entraid-web-auth-reference-app-dev'
+          app-name: ${{ steps.extract-app-name.outputs.web_app_name }}
           slot-name: 'Production'
           

@@ -4,6 +4,8 @@ variable file {
   description = "Uses a static json file which contains all possible roles and permissions for the graph api. For compatibility it should be downloaded as JSON via https://graph.microsoft.com/v1.0/servicePrincipals?&%24filter=appId%20eq%20'00000003-0000-0000-c000-000000000000'&&%24select=appRoles,oauth2PermissionScopes'"
 }
 
+# REMARK you have to run azure_api_roles_quey.sh module to download the permissions and check them in into the repository
+
 locals {
   api_permissions = jsondecode(file("${path.module}/${trim(trim(trim(var.file," "),"/"), "\\")}"))
   application_roles_dictionary = { 
