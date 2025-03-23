@@ -148,7 +148,7 @@ resource "azuread_application" "reg" {
     # logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
     
     # !!! Important deactivate localhost uris in production !!!  
-    redirect_uris = var.env == "dev" ? ["https://${azurerm_linux_web_app.web.default_hostname}", "http://localhost:8000/", "http://localhost:5173/"] : ["https://${azurerm_linux_web_app.web.default_hostname}"]
+    redirect_uris = var.env == "dev" ? ["https://${azurerm_linux_web_app.web.default_hostname}/", "http://localhost:8000/", "http://localhost:5173/"] : ["https://${azurerm_linux_web_app.web.default_hostname}/"]
 
     # implicit_grant {
     #   access_token_issuance_enabled = false
