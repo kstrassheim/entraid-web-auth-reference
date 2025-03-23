@@ -18,7 +18,7 @@ variable deployment_user_managed_identity_name {
 
 variable web_plan_sku {
     description = "Performance: The sku of the deployed application"
-    default     = "F1"
+    default     = "B1"
     type        = string
 }
 

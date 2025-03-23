@@ -37,8 +37,10 @@ resource "azurerm_linux_web_app" "web" {
     application_stack {
         python_version = "3.12"
     }
+    
     # Startup command for FASTAPI
     app_command_line  = "gunicorn --worker-class uvicorn.workers.UvicornWorker --timeout 600 --access-logfile '-' --error-logfile '-' main:app"
+    
     # Health check configuration
     health_check_path = "/health"
     health_check_eviction_time_in_min = 10
@@ -46,7 +48,9 @@ resource "azurerm_linux_web_app" "web" {
 
   # Add the telemetry instrumentation key as an app setting
   app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.log.instrumentation_key
+    # "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.log.instrumentation_key
+    // !!! IMPORTANT or python site will not build !!!
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"= true'
   }
 }
 
