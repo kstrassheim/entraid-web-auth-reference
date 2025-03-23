@@ -48,11 +48,14 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          # Disable command echoing first otherwise will produce additional line in JSON making it invalid
-          set +x
           # Run terraform
           terraform apply -auto-approve
-          terraform output -json > terraform_output.json
+          # Capture output in a variable instead of direct redirection
+          echo "Capturing Terraform output..."
+          TERRAFORM_OUTPUT=$(terraform output -json)
+          
+          # Write captured output to file
+          echo "$TERRAFORM_OUTPUT" > terraform_output.json
           
           # Verify JSON validity and fail if invalid
           if ! cat terraform_output.json | python3 -m json.tool > /dev/null; then
