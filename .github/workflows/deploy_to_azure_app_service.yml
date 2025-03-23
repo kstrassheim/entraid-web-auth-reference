@@ -89,21 +89,21 @@ jobs:
             # For backend - can use the original format
             cp terraform_output.json backend/terraform.config.json
             
-            cd frontend
-            echo "Frontend Folder:
-            ls -a
-            cd ..
-            cd backend
-            echo "Backend Folder:
-            ls -a
-            exit 1
-            cd ../
+            # cd frontend
+            # echo "Frontend Folder:
+            # ls -a
+            # cd ..
+            # cd backend
+            # echo "Backend Folder:
+            # ls -a
+            # exit 1
+            # cd ../
 
-            # Validate the JSON files
-            echo "Frontend JSON:"
-            cat frontend/terraform.config.json
-            echo "Backend JSON:"
-            cat backend/terraform.config.json
+            # # Validate the JSON files
+            # echo "Frontend JSON:"
+            # cat frontend/terraform.config.json
+            # echo "Backend JSON:"
+            # cat backend/terraform.config.json
           else
             echo "Error: terraform_output.json not found!"
             cd frontend
