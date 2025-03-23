@@ -51,9 +51,6 @@ jobs:
           # Run terraform
           terraform apply -auto-approve
 
-          # Ensure we're creating a fresh output file
-          rm -f terraform_output.json
-          # Execute terraform output and save to temp file
           terraform output -json > terraform_output.raw
           
           # Remove the first line (command echo) and save to final file
