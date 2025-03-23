@@ -10,8 +10,21 @@ variable env {
     type        = string
 }
 
-variable location {
-    description = "The environment to deploy the resources to"
-    default     = "West Europe"
+variable deployment_user_managed_identity_name {
+    description = "The name of the user managed identity that does the deployment"
+    default     = "github-entraid-web-auth-reference-dev"
+    type        = string
+} 
+
+variable web_plan_sku {
+    description = "Performance: The sku of the deployed application"
+    default     = "F1"
     type        = string
 }
+
+variable web_instances_count {
+    description = "Performance: The number of workers to run the application"
+    default     = 1
+    type        = number
+}
+

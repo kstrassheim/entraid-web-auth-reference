@@ -1,10 +1,21 @@
 # get api role dictionaries
 module api_roles {
-  source = "./modules/azure_api_roles_static"
+  source = "./modules/azure_api_roles"
 }
 
+# Reference the resource group of this project
 data "azurerm_resource_group" "rg" {
   name = "entraid-web-auth-reference-dev"   // name of your resource group
+}
+
+// Reference to assign the ownership to the app registration
+data "azurerm_user_assigned_identity" "deploy_managed_identity" {
+  name = var.deployment_user_managed_identity_name
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+data "azuread_service_principal" "deploy_managed_identity_pricipal" {
+  client_id = data.azurerm_user_assigned_identity.deploy_managed_identity.client_id
 }
 
 // Create an App Service Plan (Linux)
@@ -13,7 +24,7 @@ resource "azurerm_service_plan" "plan" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   os_type             = "Linux"
-  sku_name            = "F1"
+  sku_name            = var.web_plan_sku 
 }
 
 resource "azurerm_linux_web_app" "web" {
@@ -43,13 +54,13 @@ resource "azurerm_application_insights" "log" {
   application_type    = "web"
 }
 
-data "azuread_client_config" "current" {}
-
 # Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
   display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
   logo_image       = filebase64("${path.module}/frontend/src/assets/logo.png")
-  owners           = [data.azuread_client_config.current.object_id]
+
+  # Assign the ownership to the deployment managed identity or you will get conflicts between local and pipeline deployments
+  owners           = [data.azuread_service_principal.deploy_managed_identity_pricipal.object_id]
   // Single Tenant
   sign_in_audience = "AzureADMyOrg"
 

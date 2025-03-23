@@ -38,6 +38,69 @@ On Windows
 6. In VSCode go to Debug Settings and select "Full Stack Debug"
 7. Press key F5 to run the project which should start with a new browser and show you the page
 
+## Azure Setup
+Create an empty resource group and make sure that you are at least Contributor of it.
+1. Go to your Project's (Env) Resouce Group click on Create and Create a User assigned Managed Identity. There is no special setup on this point. Just create it.
+2. Add the Managed Identity as Contributor to the Resource Group to enable it deploying resources
+3. Assign the Managed Identity as Application Application Admin (Application Developer not worked out) to enable it creating application. This can be tricky a bit as you sometimes cannot assign it via Menu because it only shows users and Applications for that you can 
+  - Open the Manged Identity and on Overview page get its __ObjectId__ (not ClientId)
+  - Open Azure CLI and type 
+      ```powershell
+        Get-AzureADDirectoryRole
+      ```
+  - If it is in the list then get its ObjectId (of "Application Administrator" role) if not you have to assign a user to get it activated
+  - Then execute
+      ```powershell
+        Add-AzureADDirectoryRoleMember -ObjectId '[App Admin Object Id]' -RefObjectId '[User Managed Identity Object Id]'
+      ``` 
+  - Also assign the "Directory Reader" role in the same way to enable the terraform module `azure_api_roles' query the directory. Or use the `azure_api_roles_static' module where you have to check in the result json into the repository.
+      ```powershell
+        Add-AzureADDirectoryRoleMember -ObjectId '[Directory Reader Object Id]' -RefObjectId '[User Managed Identity Object Id]'
+      ``` 
+## Connect Github Setup
+The github actions require permissions to create the structure with terraform. Do the following steps to create and assign a ServicePricipal to that specific Github Project' Environment if neccessary.
+1. In Azure Open the Managed Identity goto Settings/Federated Credentials and click Add Credential and select the Federated credential scenario "Configure a Github issued token..."
+2. Add your Organization/Personal Accountname, enter the repository name and __environment__ name as Entity. Also choose a credential name for it.
+3. Click on Add
+4. Go to overview Page and save the following IDs from it
+  - Client ID
+  - Subcription ID
+  - Tenant ID (Open JSON View on the top right for that)
+5. Go on Github and open you repository and open Settings
+6. In Environments select "new environment" and enter the name of the __environment__ you choosen in the federated credential. then click on configure environment.
+7. Enter the following Environment __Secrets__ which you saved from the managed identites. The key names have to be exactly like that. The values you got from the federated credential.
+  - AZURE_CLIENT_ID=[Client ID]
+  - AZURE_SUBSCRIPTION_ID=[Subcription ID]
+  - AZURE_TENANT_ID=[Tenant ID] 
+8. make sure that you have set up the environment name in any job that requires these credentials.
+  ```yaml
+    jobs:
+      terraform:
+        environment:
+          name: 'dev'
+  ```
+9. In the jobs where you need them add the with statement to make sure they are provided. The services should usually auto grab them otherwise you can map them.
+  ```yaml
+      with:
+        # auth-type: SERVICE_PRINCIPAL
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ```
+11. You are done here. Run the Action and check if it can authorize on azure for it.
+## Terraform Azure Storage Setup
+When you have a Storage Account for all Terraform states of all projects on your Tenant then create a Container `[projectname_env]` and
+1. Check if terraform azurerm backend is configured with use_azuread_auth = true
+2. Assign yourself as **Storage Data Contributor** to the container
+3. Assign the Github Managed Identity also **Storage Data Contributor** Permissions to the container
+
+## Terraform Local Setup
+You have to set the following variables in the terraform var and tfvar files to attach the terraform installation to you project.
+
+## Terraform deployment
+When you have set up everything then terraform will do the whole deployment of the resources and the web application. 
+
+
 ### Architecture
 Here is the simple architecture description
 #### ./backend
@@ -75,45 +138,3 @@ To generate a production compile of the frontend
 1. Navigate to frontend folder `cd ./frontend`
 2. Type `npm run build`
 3. It will create a build into ./__backend__/dist folder where fast-api will start it. `./backend/dist`
-## Azure Setup
-Create an empty resource group and make sure that you are at least Contributor of it.
-## Github Setup
-The github actions require permissions to create the structure with terraform. Do the following steps to create and assign a ServicePricipal to that specific Github Project' Environment if neccessary.
-1. Go to your Project's (Env) Resouce Group click on Create and Create a User assigned Managed Identity. There is no special setup on this point. Just create it.
-2. Open the Managed Identity goto Settings/Federated Credentials and click Add Credential and select the Federated credential scenario "Configure a Github issued token..."
-3. Add your Organization/Personal Accountname, enter the repository name and __environment__ name as Entity. Also choose a credential name for it.
-4. Click on Add
-5. Go to overview Page and save the following IDs from it
-  - Client ID
-  - Subcription ID
-  - Tenant ID (Open JSON View on the top right for that)
-6. Go on Github and open you repository and open Settings
-7. In Environments select "new environment" and enter the name of the __environment__ you choosen in the federated credential. then click on configure environment.
-8. Enter the following Environment __Secrets__ which you saved from the managed identites. The key names have to be exactly like that. The values you got from the federated credential.
-  - AZURE_CLIENT_ID=[Client ID]
-  - AZURE_SUBSCRIPTION_ID=[Subcription ID]
-  - AZURE_TENANT_ID=[Tenant ID] 
-9. make sure that you have set up the environment name in any job that requires these credentials.
-  ```yaml
-    jobs:
-      terraform:
-        environment:
-          name: 'dev'
-  ```
-10. In the jobs where you need them add the with statement to make sure they are provided. The services should usually auto grab them otherwise you can map them.
-  ```yaml
-      with:
-        # auth-type: SERVICE_PRINCIPAL
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ```
-11. You are done here. Run the Action and check if it can authorize on azure for it.
-## Azure Storage Setup
-When you have a Storage Account for all Terraform states of all projects on your Tenant then create a Container `[projectname_env]` and
-1. Check if terraform azurerm backend is configured with use_azuread_auth = true
-2. Assign yourself as **Storage Data Contributor** to the container
-3. Assign the Github Managed Identity also **Storage Data Contributor** Permissions to the container
-
-## Terraform deployment
-When you have set up everything then terraform will do the whole deployment of the resources and the web application. 
