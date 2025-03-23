@@ -1,6 +1,6 @@
 # get api role dictionaries
 module api_roles {
-  source = "./modules/azure_api_roles"
+  source = "./modules/azure_api_roles_static"
 }
 
 data "azurerm_resource_group" "rg" {

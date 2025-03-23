@@ -10,6 +10,7 @@ terraform {
     storage_account_name = "mytofustates"       # the name of your storage account (must be globally unique)
     container_name       = "entraid-web-auth-reference"                  # the name of the container in the storage account
     key                  = "dev.tfstate"        # the state file name
+    use_azuread_auth = true
   }
 }
 

@@ -7,6 +7,7 @@ This project fulfills the following requirements.
 - Provide all required settings for the environment via terraform output
 - Build and connect all the applications according to the terraform config for each environment. __Without manual setup of environment variables__
 - Deploy and connect to the Authentication automatically
+- In terraform you can select roles by their names and provide them like that to the applications. thanks to the custom terraform modules inside the project.
 
 ### From [FastAPI-Reference](https://github.com/kstrassheim/fastapi-reference)
 - Quick to initialize
@@ -43,11 +44,11 @@ Here is the simple architecture description
 Here is the python backend located which is build with simple FastAPI Framework
 #### ./frontend
 Here is the frontend located which is build with Vite was just slightly modified in `vite.config.js` to output the Dist Build to Backend. This is now build with React but you are free to running the following command from the root folder to setup your own framework with it. 
-```
+```sh
 npm create vite frontend
 ```
 __Dont forget to add the following lines to `./frontend/vite.config.js` into `export default defineConfig({})` block or it will not run in production.__
-```
+```json
   base: "/",
   // Put the dist folder into the backend to enable easier deployment
   build: {

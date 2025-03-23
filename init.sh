@@ -1,3 +1,4 @@
+#TODO check for az login
 echo -e "\033[34mInitializing Frontend\033[0m"
 cd frontend
 npm install
@@ -7,7 +8,8 @@ python3 -m venv backend/venv
 backend/venv/bin/pip install -r ./backend/requirements.txt
 
 echo -e "\033[34mInitializing Terraform\033[0m"
-# ./terraform_apply.sh
+terraform init
+./terraform_apply.sh
 
 #!/usr/bin/env bash
 # Check if the virtual environment exists

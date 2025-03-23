@@ -19,6 +19,11 @@
     "type": "string",
     "value": "32987e48-c6ce-43ca-86a4-7abb7ec84966"
   },
+  "env": {
+    "sensitive": false,
+    "type": "string",
+    "value": "dev"
+  },
   "oauth2_permission_scope": {
     "sensitive": false,
     "type": "string",
