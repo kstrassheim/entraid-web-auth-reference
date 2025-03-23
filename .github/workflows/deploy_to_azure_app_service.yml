@@ -101,8 +101,7 @@ jobs:
             # For backend - can use the original format
             cp terraform_output.json backend/terraform.config.json
             
-
-            echo "Validating JSON Backend..."
+            echo "Validating Terraform JSON Backend..."
             if jq . backend/terraform.config.json> /dev/null 2>&1; then
               echo -e "\033[32mSUCCESS: Valid JSON confirmed\033[0m"
             else
@@ -114,7 +113,7 @@ jobs:
 
             cp terraform_output.json frontend/terraform.config.json
 
-            echo "Validating JSON Frontend..."
+            echo "Validating Terraform JSON Frontend..."
             if jq . frontend/terraform.config.json> /dev/null 2>&1; then
               echo -e "\033[32mSUCCESS: Valid JSON confirmed\033[0m"
             else
@@ -124,21 +123,6 @@ jobs:
               exit 1
             fi
 
-            cd frontend
-            echo "Frontend Folder:
-            ls -a
-            cd ..
-            cd backend
-            echo "Backend Folder:
-            ls -a
-            exit 1
-            cd ../
-            
-            # # Validate the JSON files
-            # echo "Frontend JSON:"
-            # cat frontend/terraform.config.json
-            # echo "Backend JSON:"
-            # cat backend/terraform.config.json
           else
             echo "Error: terraform_output.json not found!"
             exit 1
