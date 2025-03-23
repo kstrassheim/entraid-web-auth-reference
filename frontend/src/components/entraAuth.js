@@ -9,8 +9,8 @@ export const msalConfig = () =>{
     auth: {
       clientId: tfconfig.client_id.value,
       authority: `https://login.microsoftonline.com/${tfconfig.tenant_id.value}/v2.0`,
-      // redirectUri: frontendUrl,
-      // postLogoutRedirectUri: frontendUrl+'/post-logout',
+      redirectUri: frontendUrl,
+      postLogoutRedirectUri: frontendUrl+'/post-logout',
     },
     cache: {
       cacheLocation: 'sessionStorage',

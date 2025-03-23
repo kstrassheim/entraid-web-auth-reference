@@ -152,6 +152,7 @@ jobs:
       - name: Install Node dependencies
         run: |
           cd frontend
+          touch .deploy
           npm install
       
       - name: Build Frontend

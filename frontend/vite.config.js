@@ -5,6 +5,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 // import { viteStaticCopy } from 'vite-plugin-static-copy';
 import tfconfig from './terraform.config.json'
+const isDeployment = fs.existsSync('./.deploy');
+
 
 // Optional: Copy logo files manually before Vite starts (for development)
 const copyLogos = () => {
@@ -40,6 +42,10 @@ const copyLogos = () => {
 export default defineConfig({
   plugins: [react()],
   base: "/",
+  define: {
+    // define another production uri for deployment then local
+    __PROD_URI__: isDeployment ? JSON.stringify(tfconfig.web_url.value) : JSON.stringify('http://localhost:8000')
+  },
   build: {
     outDir: '../backend/dist',
     emptyOutDir: true
