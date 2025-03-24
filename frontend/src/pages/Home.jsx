@@ -1,18 +1,36 @@
 import { useState, useEffect, useRef } from 'react'
 import './Home.css'
-import { getUserData } from '../components/api'
+import { getUserData, getAllGroups } from '../components/api'
 import { useMsal } from '@azure/msal-react';
 import {env} from '../config'
 import appInsights from '../components/appInsights';
+import GroupsList from '../components/GroupsList';
 
 const Home = () => {
   const { instance } = useMsal();
   const [data, setData] = useState(null);
+  const [groupData, setGroupData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const initFetchCompleted = useRef(false);
 
   const fetchData = async () => {
-    const result = await getUserData(instance);
-    setData(result)
+    setLoading(true);
+    setError(null);
+    try {
+      const [userData, groupsData] = await Promise.all([
+        getUserData(instance),
+        getAllGroups(instance)
+      ]);
+
+      setData(userData);
+      setGroupData(groupsData);
+    } catch (err) {
+      setError(err.message);
+      appInsights.trackException({ exception: err });
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { 
@@ -28,15 +46,27 @@ const Home = () => {
     <>
       <div>
         <h1>Home Page</h1>
-        <p>Environment:{env}</p>
-        <h2>{data ? data.message : 'Loading...'}</h2>
-        <button onClick={fetchData}>Reload Data</button>
-        <p className="read-the-docs">
-          Click on the Logo to learn more
-        </p>
+        <p>Environment: {env}</p>
+        
+        {loading && <p className="loading">Loading data...</p>}
+        {error && <p className="error">Error: {error}</p>}
+        
+        <div className="card">
+          <h2>API Response</h2>
+          <p>{data ? data.message : 'No data available'}</p>
+        </div>
+        
+        <div className="card">
+          <h2>Groups from Microsoft Graph API</h2>
+          <GroupsList groups={groupData} loading={loading} />
+        </div>
+        
+        <button onClick={fetchData} disabled={loading}>
+          {loading ? 'Loading...' : 'Reload Data'}
+        </button>
       </div>
     </>
   )
 }
 
-export default Home
+export default Home;
