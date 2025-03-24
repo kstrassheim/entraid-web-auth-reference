@@ -60,6 +60,7 @@ on:
 jobs:
   terraform:
     environment:
+      # WILL REQUEST APPROVAL IF SET ON PROTECTED 
       name: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
@@ -204,8 +205,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
