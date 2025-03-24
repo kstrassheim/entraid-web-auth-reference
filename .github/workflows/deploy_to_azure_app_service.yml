@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  dev-deploy:
     uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
     with:
       environment: 'dev'
@@ -20,8 +20,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-jobs:
-  deploy:
+  test-deploy:
     uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
     with:
       environment: 'test'
@@ -30,8 +29,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-jobs:
-  deploy:
+  prod-deploy:
     uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
     with:
       environment: 'prod'
