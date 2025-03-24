@@ -9,7 +9,7 @@ terraform {
     resource_group_name  = "terraform"      # the resource group where your storage account exists
     storage_account_name = "mytofustates"       # the name of your storage account (must be globally unique)
     container_name       = "entraid-web-auth-reference"                  # the name of the container in the storage account
-    key                  = "dev.tfstate"        # the state file name
+    key                  = "dev.tfstate"        # In pipeline this will be changed to terraform init -backend-config="key=${{ inputs.environment }}.tfstate
     use_azuread_auth = true
   }
 }
