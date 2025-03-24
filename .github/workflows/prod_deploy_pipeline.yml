@@ -26,7 +26,7 @@ jobs:
   prod:
     uses: ./.github/workflows/.entraid_web_deployment.yml
     # Always waits for test-deploy to be successful first
-    needs: test-deploy
+    needs: test
     # Configure this job to use the prod environment
     with:
       environment: 'prod'
