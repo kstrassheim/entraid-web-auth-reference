@@ -133,10 +133,10 @@ resource "azuread_application" "reg" {
       type = lookup(module.api_roles.role_type_mapping, "Delegated")
     }
 
-    resource_access {
-      id   = lookup(module.api_roles.application_roles_dictionary,"Directory.Read.All")
-      type = lookup(module.api_roles.role_type_mapping, "Application")
-    }
+    # resource_access {
+    #   id   = lookup(module.api_roles.application_roles_dictionary,"Directory.Read.All")
+    #   type = lookup(module.api_roles.role_type_mapping, "Application")
+    # }
   }
 
   # Add a single-page application block
