@@ -68,9 +68,9 @@ jobs:
       contents: read
     outputs:
       # pass variables to the deploy job to avoid asking for approval again
-      azure_client_id: ${{ steps.get-token.outputs.client_id }}
-      azure_tenant_id: ${{ steps.get-token.outputs.tenant_id }}
-      azure_subscription_id: ${{ steps.get-token.outputs.subscription_id }} 
+      azure_client_id: ${{ steps.pass-azure-data.outputs.client_id }}
+      azure_tenant_id: ${{ steps.pass-azure-data.outputs.tenant_id }}
+      azure_subscription_id: ${{ steps.pass-azure-data.outputs.subscription_id }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -133,7 +133,9 @@ jobs:
           fi
 
       # Pass the Azure data to the deploy job to avoid asking for approval again
+      # In the terraform job
       - name: Pass Azure Data to Deploy Job
+        id: pass-azure-data    # ADD THIS ID - currently missing
         run: |
           echo "client_id=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_OUTPUT
           echo "tenant_id=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
