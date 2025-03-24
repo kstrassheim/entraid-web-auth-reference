@@ -50,8 +50,8 @@ const Home = () => {
       
       <div>
         <h1>Home Page</h1>
-        <p>Environment: {env}</p>
-        
+        {/* <p>Environment: {env}</p>
+         */}
         {error && <div className="error">Error: {error}</div>}
         
         <div className="card">
