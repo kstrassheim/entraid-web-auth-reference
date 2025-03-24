@@ -6,7 +6,7 @@
 # ------
 # jobs:
 #   deploy:
-#     uses: ./.github/workflows/entraid_web_deployment.yml@main
+#     uses: ./.github/workflows/entraid_web_deployment.yml
 #     with:
 #       environment: 'dev'
 #       python_version: '3.12'
@@ -20,8 +20,8 @@
 # -------------
 # 1. Azure credentials configured as repository secrets
 # 2. Repository structure:
-#    - [backend](http://_vscodecontentref_/2): FastAPI backend code
-#    - [frontend](http://_vscodecontentref_/3): React frontend code
+#    - [backend]: FastAPI backend code
+#    - [frontend]: React frontend code
 #    - Terraform configuration in the repository root
 #
 name: Reusable Entra ID Web App Deployment
@@ -57,7 +57,7 @@ on:
         required: true
 
 jobs:
-  deploy-all:
+  deploy:
     environment:
       # WILL REQUEST APPROVAL ONLY ONCE
       name: ${{ inputs.environment }}
@@ -126,6 +126,15 @@ jobs:
             cat terraform_output.json
             exit 1
           fi
+          
+      # Upload terraform output as artifact  
+      - name: Upload Terraform output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-config-${{ inputs.environment }}
+          path: ${{ inputs.terraform_working_dir }}/terraform_output.json
+          retention-days: 7
+          if-no-files-found: error
       
       # === BUILD STEPS ===
       - name: Copy and format Terraform config
@@ -174,6 +183,15 @@ jobs:
         run: |
           cd backend
           zip -r ../release.zip ./*
+          
+      # Upload release package as artifact
+      - name: Upload Release package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-package-${{ inputs.environment }}
+          path: release.zip
+          retention-days: 7
+          if-no-files-found: error
       
       # === DEPLOY STEPS ===
       - name: Extract web app name from terraform config
