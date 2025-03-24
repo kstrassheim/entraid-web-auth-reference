@@ -5,7 +5,7 @@ module api_roles {
 
 # Reference the resource group of this project
 data "azurerm_resource_group" "rg" {
-  name = "entraid-web-auth-reference-dev"   // name of your resource group
+  name = var.resource_group_name   // name of your resource group
 }
 
 // Reference to assign the ownership to the app registration

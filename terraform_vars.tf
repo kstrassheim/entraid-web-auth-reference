@@ -4,6 +4,12 @@ variable app_name {
     type        = string
 }
 
+variable resource_group_name {
+    description = "The name of the resource group to deploy the resources to"
+    default     = "entraid_web_auth_reference_dev"
+    type        = string
+}
+
 variable deployment_user_managed_identity_name {
     description = "The name of the user managed identity that does the deployment"
     default     = "github-entraid-web-auth-reference-dev"

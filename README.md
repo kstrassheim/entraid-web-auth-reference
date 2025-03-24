@@ -99,11 +99,13 @@ You have to set the following variables in the terraform var and tfvar files to 
 ### terraform_vars.tf
 The following 2 variables are very important to attach because the application 
 - __app_name__ - the short name of the application - many namings in terraform are derived by this
+- __resource_group_name__ - the resource group where to deploy the resources to
 - __deployment_user_managed_identity_name__ - this is the name of the deployment user/managed identity which you generated before.
 Other settings are not that important as the 
 ### terraform_vars_test.tfvars and terraform_vars_prod.tfvars
 This are the variable sets for the test and prod environment which the pipeline will take. The app_name does not have to be changed here as it has already environment in naming but you have to set.
-- __deployment_user_managed_identity_name__ - this is the name of the deployment user/managed identity which the pipeline uses to create the azure resources. It has to be set here because terraform has to set this user as owner of the resources to allow changing them
+- __deployment_user_managed_identity_name__ - this is the name of the deployment user/managed identity which the pipeline uses to create the azure 
+- __resource_group_name__ - the resource group where to deploy the resources toresources. It has to be set here because terraform has to set this user as owner of the resources to allow changing them
 ### other variables (Optional)
 The app is fully capable to run in Azure Free Plan but if you require more performance you can change these variables whether in var file (Default or in the specific environment file)
 - web_plan_sku - "F1", "B1" ... will define the web plans for azure app services for more information about the performance and costs you can check this page https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
