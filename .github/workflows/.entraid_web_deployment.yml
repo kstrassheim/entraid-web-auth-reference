@@ -66,6 +66,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      azure_token: ${{ steps.get-token.outputs.token }}  # Define the job output
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -126,6 +128,13 @@ jobs:
             cat terraform_output.json
             exit 1
           fi
+      # Generate a token for the web deploy to avoid approval again
+      - name: Generate Azure token
+        run: |
+          # Get token and set as output (will be masked automatically)
+          TOKEN=$(az account get-access-token --query accessToken -o tsv)
+          echo "::add-mask::$TOKEN"  # Mask the token in logs
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
           
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -135,7 +144,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: terraform
+    needs: terraform # needs terraform because config file has information for the build
     permissions:
       contents: read
     steps:
@@ -231,12 +240,25 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Login to Azure with token
+        run: |
+          # Create masked secret from the output
+          echo "::add-mask::${{ needs.terraform.outputs.azure_token }}"
+          # Login using the token instead of OIDC
+          az login --service-principal --allow-no-subscriptions --only-show-errors --access-token "$TOKEN"
+    # az login --service-principal \
+    #   -u ${{ secrets.AZURE_CLIENT_ID }} \
+    #   -t ${{ secrets.AZURE_TENANT_ID }} \
+    #   --allow-no-subscriptions \
+    #   --only-show-errors \
+    #   -p ${{ needs.terraform.outputs.azure_token }}
+
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
