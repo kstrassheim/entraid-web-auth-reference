@@ -218,8 +218,8 @@ jobs:
       - name: Download Terraform config artifact
         uses: actions/download-artifact@v4
         with:
-          name: terraform-config
-          path: ./terraform-config-${{ inputs.environment }}
+          name: terraform-config-${{ inputs.environment }}
+          path: ./terraform-config
 
       - name: Extract web app name from terraform config
         id: extract-app-name
