@@ -74,6 +74,7 @@ resource "azuread_application" "reg" {
     ]
   }
   
+  
   # Assign the ownership to the deployment managed identity or you will get conflicts between local and pipeline deployments
   owners           = [data.azuread_service_principal.deploy_managed_identity_pricipal.object_id]
   // Single Tenant
