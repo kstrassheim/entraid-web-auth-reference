@@ -6,7 +6,7 @@ variable app_name {
 
 variable resource_group_name {
     description = "The name of the resource group to deploy the resources to"
-    default     = "entraid_web_auth_reference_dev"
+    default     = "entraid-web-auth-reference-dev"
     type        = string
 }
 
