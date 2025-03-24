@@ -8,6 +8,9 @@ This project fulfills the following requirements.
 - Build and connect all the applications according to the terraform config for each environment. __Without manual setup of environment variables__
 - Deploy and connect to the Authentication automatically
 - In terraform you can select roles by their names and provide them like that to the applications. thanks to the custom terraform modules inside the project.
+- 3 Step Approval process 
+  - On Merge completed main - Deploy dev
+  - On Tag/Release - Dep
 
 ### From [FastAPI-Reference](https://github.com/kstrassheim/fastapi-reference)
 - Quick to initialize
