@@ -12,6 +12,9 @@ on:
 
 jobs:
   dev-deploy:
+    permissions:
+      id-token: write   # Add this permission
+      contents: read
     uses: ./.github/workflows/entraid_web_deployment.yml
     with:
       environment: 'dev'
@@ -22,6 +25,9 @@ jobs:
 
   test-deploy:
     uses: ./.github/workflows/entraid_web_deployment.yml
+    permissions:
+      id-token: write   # Add this permission
+      contents: read
     with:
       environment: 'test'
     secrets:
@@ -31,6 +37,9 @@ jobs:
 
   prod-deploy:
     uses: ./.github/workflows/entraid_web_deployment.yml
+    permissions:
+      id-token: write   # Add this permission
+      contents: read
     with:
       environment: 'prod'
     secrets:
