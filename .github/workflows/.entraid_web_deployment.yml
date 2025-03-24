@@ -244,7 +244,14 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
+        
+      - name: Debug received values
+        run: |
+          echo "Checking if values were received from terraform job:"
+          echo "Client ID received: ${{ needs.terraform.outputs.azure_client_id != '' }}"
+          echo "Tenant ID received: ${{ needs.terraform.outputs.azure_tenant_id != '' }}"
+          echo "Subscription ID received: ${{ needs.terraform.outputs.azure_subscription_id != '' }}"
+    
       - name: Login to Azure
         uses: azure/login@v2
         with:
