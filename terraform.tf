@@ -5,7 +5,7 @@ module api_roles {
 
 # Reference the resource group of this project
 data "azurerm_resource_group" "rg" {
-  name = "entraid-web-auth-reference-dev"   // name of your resource group
+  name = var.resource_group_name   // name of your resource group
 }
 
 // Reference to assign the ownership to the app registration
@@ -64,7 +64,7 @@ resource "azurerm_application_insights" "log" {
 # Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
   display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
-  logo_image       = filebase64("${path.module}/frontend/public/logo.png")
+  logo_image       = filebase64("${path.module}/frontend/logo_src/${var.env}/logo.png")
 
   # !! ABSOLUTELY IMPORTANT OTHERWISE - IDENTIFIER HAS TO BE CONFIGURED IN SEPERATE OBJECT BELOW AND THIS HAS TO BE SET !!
   # !! OTHERWISE IT WILL RECREATE AGAIN AND AGAIN WITHOUT SETTING THE IDENTIFIER URI WHAT WILL DISABLE AUTHENTICATION FOR CLIENTS !!!
@@ -133,30 +133,18 @@ resource "azuread_application" "reg" {
       type = lookup(module.api_roles.role_type_mapping, "Delegated")
     }
 
-    resource_access {
-      id   = lookup(module.api_roles.application_roles_dictionary,"Directory.Read.All")
-      type = lookup(module.api_roles.role_type_mapping, "Application")
-    }
+    # IF APPLICATION ROLES ARE NEEDED - hERE NOT REALLY
+    # resource_access {
+    #   id   = lookup(module.api_roles.application_roles_dictionary,"Directory.Read.All")
+    #   type = lookup(module.api_roles.role_type_mapping, "Application")
+    # }
   }
 
   # Add a single-page application block
   single_page_application {
-    # URIs used by your SPA (e.g., React, Angular, Vue) in development or production
-   # Add the local dev uris here 8000 for FASTAPI Backend and 5173 for Vite/React Frontend
-
-    # homepage_url  = "https://${azurerm_linux_web_app.web.default_hostname}"
-    # logout_url    = "https://${azurerm_linux_web_app.web.default_hostname}"
-    
-    # !!! Important deactivate localhost uris in production !!!  
     redirect_uris = var.env == "dev" ? ["https://${azurerm_linux_web_app.web.default_hostname}/", "http://localhost:8000/", "http://localhost:5173/"] : ["https://${azurerm_linux_web_app.web.default_hostname}/"]
-
-    # implicit_grant {
-    #   access_token_issuance_enabled = false
-    #   id_token_issuance_enabled     = false
-    # }
   }
 }
-
 
 resource "azuread_application_identifier_uri" "app_identifier" {
   application_id = azuread_application.reg.id

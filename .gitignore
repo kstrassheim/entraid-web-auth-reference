@@ -185,7 +185,6 @@ terraform.tfstate.backup
 terraform.lock.hcl
 override.tf
 *_override.tf
-*.tfvars
 
 *output.json
 outputs.json

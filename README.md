@@ -8,6 +8,10 @@ This project fulfills the following requirements.
 - Build and connect all the applications according to the terraform config for each environment. __Without manual setup of environment variables__
 - Deploy and connect to the Authentication automatically
 - In terraform you can select roles by their names and provide them like that to the applications. thanks to the custom terraform modules inside the project.
+- Three (3) step approval process pipeline
+  - On Merge completed main - Deploy dev
+  - On Tag/Release - Deploy to test
+  - On Test deployed (and approved) - Deploy to prod - (Environment has to be set as protected for approval)
 
 ### From [FastAPI-Reference](https://github.com/kstrassheim/fastapi-reference)
 - Quick to initialize
@@ -96,11 +100,23 @@ When you have a Storage Account for all Terraform states of all projects on your
 
 ## Terraform Local Setup
 You have to set the following variables in the terraform var and tfvar files to attach the terraform installation to you project.
-
+### terraform_vars.tf
+The following 2 variables are very important to attach because the application 
+- __app_name__ - the short name of the application - many namings in terraform are derived by this
+- __resource_group_name__ - the resource group where to deploy the resources to
+- __deployment_user_managed_identity_name__ - this is the name of the deployment user/managed identity which you generated before.
+Other settings are not that important as the 
+### terraform_vars_test.tfvars and terraform_vars_prod.tfvars
+This are the variable sets for the test and prod environment which the pipeline will take. The app_name does not have to be changed here as it has already environment in naming but you have to set.
+- __deployment_user_managed_identity_name__ - this is the name of the deployment user/managed identity which the pipeline uses to create the azure 
+- __resource_group_name__ - the resource group where to deploy the resources toresources. It has to be set here because terraform has to set this user as owner of the resources to allow changing them
+### other variables (Optional)
+The app is fully capable to run in Azure Free Plan but if you require more performance you can change these variables whether in var file (Default or in the specific environment file)
+- web_plan_sku - "F1", "B1" ... will define the web plans for azure app services for more information about the performance and costs you can check this page https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
+- web_instances_count - The compute instances used for the plan. Per default its 1.
+The env variable you should not touch unless you really want to change the naming everywhere.
 ## Terraform deployment
 When you have set up everything then terraform will do the whole deployment of the resources and the web application. 
-
-
 ### Architecture
 Here is the simple architecture description
 #### ./backend
@@ -138,3 +154,16 @@ To generate a production compile of the frontend
 1. Navigate to frontend folder `cd ./frontend`
 2. Type `npm run build`
 3. It will create a build into ./__backend__/dist folder where fast-api will start it. `./backend/dist`
+
+## Adding Users to Application and commit requested Permissions
+To enable users joining your application you have to do following
+1. Goto Azure Portal and Navigate to Entra Id -> Enterprise Applications
+2. Select the generated Application (following ther terraform vars it is [app_name]-dev - with dashed not undelines)  
+3. Goto Manage -> Users and groups
+4. Add the users and groups which should have access to the applcation and select also their Role (in this example its "User" or "Admin"). It will take some while so refresh the page couple of times
+5. To enable the requested permissions goto Entra Id - App registrations - All Applications
+6. Select the Select the generated Application (following ther terraform vars it is [app_name]-dev - with dashed not undelines)  
+7. Goto Mange -> API Permissions
+8. Click on "Grant admin consent for [Your Tenant Name]" and confirm
+9. The users should not be able to logon to you application and only able to navigate within their role.
+

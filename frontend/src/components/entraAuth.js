@@ -31,7 +31,7 @@ export const loginRequest = {
   scopes: tfconfig.requested_graph_api_delegated_permissions.value,
 };
 
-export const retreiveToken = async (instance, extraScopes = []) => {
+export const retreiveTokenForBackend = async (instance, extraScopes = []) => {
   appInsights.trackEvent({ name: 'MSAL Retrieving Token' });
   const account = instance.getActiveAccount();
   const tokenResponse = await instance.acquireTokenSilent({
@@ -40,5 +40,42 @@ export const retreiveToken = async (instance, extraScopes = []) => {
   });
   return tokenResponse.accessToken;
 }
+
+export const retreiveTokenForGraph = async (instance, extraScopes = []) => {
+  appInsights.trackEvent({ name: 'MSAL Retrieving Graph Token' });
+  const account = instance.getActiveAccount();
+  
+  // For Graph API, use the graph scopes - not the API scope
+  const defaultGraphScopes = ['https://graph.microsoft.com/.default'];
+  const scopesToRequest = [...defaultGraphScopes] //, ...extraScopes];
+  
+  try {
+    const tokenResponse = await instance.acquireTokenSilent({
+      scopes: scopesToRequest,
+      account: account
+    });
+    
+    return tokenResponse.accessToken;
+  } catch (error) {
+    appInsights.trackException({ 
+      exception: error,
+      properties: { 
+        operation: 'retreiveTokenForGraph', 
+        scopes: scopesToRequest.join(',') 
+      }
+    });
+    
+    // If silent token acquisition fails, you might want to try interactive
+    if (error.name === "InteractionRequiredAuthError") {
+      // fallback to interactive method
+      const interactiveResponse = await instance.acquireTokenPopup({
+        scopes: scopesToRequest,
+      });
+      return interactiveResponse.accessToken;
+    }
+    
+    throw error;
+  }
+};
 
 
