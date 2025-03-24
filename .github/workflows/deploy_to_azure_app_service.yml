@@ -12,7 +12,7 @@ on:
 
 jobs:
   dev-deploy:
-    uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
+    uses: ./.github/workflows/reusable/entraid_web_deployment.yml
     with:
       environment: 'dev'
     secrets:
@@ -21,7 +21,7 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   test-deploy:
-    uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
+    uses: ./.github/workflows/reusable/entraid_web_deployment.yml
     with:
       environment: 'test'
     secrets:
@@ -30,7 +30,7 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   prod-deploy:
-    uses: ./.github/workflows/reusable/entraid_web_deployment.yml@main
+    uses: ./.github/workflows/reusable/entraid_web_deployment.yml
     with:
       environment: 'prod'
     secrets:
