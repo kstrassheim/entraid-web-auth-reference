@@ -56,22 +56,17 @@ on:
       AZURE_SUBSCRIPTION_ID:
         required: true
 
-# The rest of your existing jobs structure stays the same, but using inputs
 jobs:
-  terraform:
+  deploy-all:
     environment:
-      # WILL REQUEST APPROVAL IF SET ON PROTECTED 
+      # WILL REQUEST APPROVAL ONLY ONCE
       name: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-    outputs:
-      # pass variables to the deploy job to avoid asking for approval again
-      azure_client_id: ${{ steps.pass-azure-data.outputs.client_id }}
-      azure_tenant_id: ${{ steps.pass-azure-data.outputs.tenant_id }}
-      azure_subscription_id: ${{ steps.pass-azure-data.outputs.subscription_id }}
     steps:
+      # === TERRAFORM STEPS ===
       - name: Checkout repository
         uses: actions/checkout@v3
         
@@ -131,41 +126,13 @@ jobs:
             cat terraform_output.json
             exit 1
           fi
-
-      # Pass the Azure data to the deploy job to avoid asking for approval again
-      # In the terraform job
-      - name: Pass Azure Data to Deploy Job
-        id: pass-azure-data    # ADD THIS ID - currently missing
-        run: |
-          echo "client_id=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_OUTPUT
-          echo "tenant_id=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
-          echo "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_OUTPUT
-          
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-config-${{ inputs.environment }}
-          path: ${{ inputs.terraform_working_dir }}/terraform_output.json
-
-  build:
-    runs-on: ubuntu-latest
-    needs: terraform # needs terraform because config file has information for the build
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Terraform config artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-config-${{ inputs.environment }}
-          path: .
-
+      
+      # === BUILD STEPS ===
       - name: Copy and format Terraform config
         run: |
-          if [ -f "terraform_output.json" ]; then
-            cp terraform_output.json backend/terraform.config.json
-            cp terraform_output.json frontend/terraform.config.json
+          if [ -f "${{ inputs.terraform_working_dir }}/terraform_output.json" ]; then
+            cp ${{ inputs.terraform_working_dir }}/terraform_output.json backend/terraform.config.json
+            cp ${{ inputs.terraform_working_dir }}/terraform_output.json frontend/terraform.config.json
           else
             echo "Error: terraform_output.json not found!"
             exit 1
@@ -207,69 +174,26 @@ jobs:
         run: |
           cd backend
           zip -r ../release.zip ./*
-
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app-${{ inputs.environment }}
-          path: |
-            release.zip
-            !venv/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build, terraform] 
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: python-app-${{ inputs.environment }}
-
-      - name: Download Terraform config artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-config-${{ inputs.environment }}
-          path: ./terraform-config
-
+      
+      # === DEPLOY STEPS ===
       - name: Extract web app name from terraform config
         id: extract-app-name
         run: |
-          sudo apt-get install -y jq
-          APP_NAME=$(jq -r '.web_app_name.value' ./terraform-config/terraform_output.json)
+          APP_NAME=$(jq -r '.web_app_name.value' ${{ inputs.terraform_working_dir }}/terraform_output.json)
           echo "web_app_name=$APP_NAME" >> $GITHUB_OUTPUT
           echo "Using web app name: $APP_NAME"
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-        
-      - name: Debug received values
-        run: |
-          echo "Checking if values were received from terraform job:"
-          echo "Client ID received: ${{ needs.terraform.outputs.azure_client_id != '' }}"
-          echo "Tenant ID received: ${{ needs.terraform.outputs.azure_tenant_id != '' }}"
-          echo "Subscription ID received: ${{ needs.terraform.outputs.azure_subscription_id != '' }}"
-    
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          # Get the Azure data from terraform job to avoid asking for approval again
-          client-id: ${{ needs.terraform.outputs.azure_client_id }}
-          tenant-id: ${{ needs.terraform.outputs.azure_tenant_id }}
-          subscription-id: ${{ needs.terraform.outputs.azure_subscription_id }}
-
-      # - name: Login to Azure
-      #   uses: azure/login@v2
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: ${{ steps.extract-app-name.outputs.web_app_name }}
+          package: release.zip
           slot-name: 'Production'
+      
+      - name: Logout from Azure
+        if: always()
+        run: |
+          az logout
+          # Clean up any cached credentials
+          rm -rf ~/.azure 2>/dev/null || true
