@@ -5,35 +5,34 @@ on:
     branches:
       - entra-auth
     tags:
-      - 'v*'  # Triggers on any tag starting with v (e.g., v1.0.0)
+      - '*'  # Triggers on any tag starting with v (e.g., v1.0.0)
   workflow_dispatch:
 
 jobs:
   test-deploy:
-    needs: dev-deploy  # Required to wait for dev to complete
-    permissions:
-      id-token: write
-      contents: read
     uses: ./.github/workflows/.entraid_web_deployment.yml
     with:
       environment: 'test'
+    #needs: dev-deploy  # Required to wait for dev to complete
+    permissions:
+      id-token: write
+      contents: read
+    
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   prod-deploy:
+    uses: ./.github/workflows/.entraid_web_deployment.yml
     # Always waits for test-deploy to be successful first
     needs: test-deploy
     # Configure this job to use the prod environment
-    environment:
-      name: 'prod'  # This enables approvals if configured in the GitHub environment settings
+    with:
+      environment: 'prod'
     permissions:
       id-token: write
       contents: read
-    uses: ./.github/workflows/.entraid_web_deployment.yml
-    with:
-      environment: 'prod'
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
