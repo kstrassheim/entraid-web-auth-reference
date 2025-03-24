@@ -5,6 +5,7 @@ import { useMsal } from '@azure/msal-react';
 import {env} from '../config'
 import appInsights from '../components/appInsights';
 import GroupsList from '../components/GroupsList';
+import Loading, {sleep} from '../components/Loading';
 
 const Home = () => {
   const { instance } = useMsal();
@@ -22,9 +23,10 @@ const Home = () => {
         getUserData(instance),
         getAllGroups(instance)
       ]);
-
+   
       setData(userData);
       setGroupData(groupsData);
+      // await sleep(1000);
     } catch (err) {
       setError(err.message);
       appInsights.trackException({ exception: err });
@@ -44,12 +46,13 @@ const Home = () => {
 
   return (
     <>
+      <Loading visible={loading} message="Fetching data from APIs..." />
+      
       <div>
         <h1>Home Page</h1>
         <p>Environment: {env}</p>
         
-        {loading && <p className="loading">Loading data...</p>}
-        {error && <p className="error">Error: {error}</p>}
+        {error && <div className="error">Error: {error}</div>}
         
         <div className="card">
           <h2>API Response</h2>
@@ -61,7 +64,7 @@ const Home = () => {
           <GroupsList groups={groupData} loading={loading} />
         </div>
         
-        <button onClick={fetchData} disabled={loading}>
+        <button onClick={fetchData} disabled={loading} className="reload-button">
           {loading ? 'Loading...' : 'Reload Data'}
         </button>
       </div>
