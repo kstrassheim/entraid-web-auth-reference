@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 const Loading = ({ visible, message = "Loading data..." }) => {
-  if (!visible) return null;
-  
-  // Handle spinner animation with React
+  // Always declare hooks at the top level, before any conditionals
   const [rotation, setRotation] = useState(0);
   
   useEffect(() => {
+    // Only run the animation logic if component is visible
+    if (!visible) return;
+    
     let animationFrame;
     let startTime;
     
@@ -26,9 +27,12 @@ const Loading = ({ visible, message = "Loading data..." }) => {
     return () => {
       cancelAnimationFrame(animationFrame);
     };
-  }, []);
+  }, [visible]); // Add visible as dependency
   
-  // Use inline styles to ensure overlay works correctly
+  // Early return after hooks are declared
+  if (!visible) return null;
+  
+  // Styles remain unchanged
   const overlayStyle = {
     position: 'fixed',
     top: 0,
@@ -58,7 +62,7 @@ const Loading = ({ visible, message = "Loading data..." }) => {
     border: '5px solid rgba(0, 0, 0, 0.1)',
     borderRadius: '50%',
     borderTopColor: '#4f46e5',
-    transform: `rotate(${rotation}deg)`,
+    transform: `rotate(${rotation}deg)`
   };
 
   const textStyle = { 
