@@ -1,6 +1,3 @@
-## Option 2: Add detailed comments at the top of the workflow file
-
-```yaml
 # Reusable Entra ID Web App Deployment
 #
 # This workflow deploys an Entra ID authenticated web application to Azure.
