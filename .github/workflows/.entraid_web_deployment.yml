@@ -67,7 +67,10 @@ jobs:
       id-token: write
       contents: read
     outputs:
-      azure_token: ${{ steps.get-token.outputs.token }}  # Define the job output
+      # pass variables to the deploy job to avoid asking for approval again
+      azure_client_id: ${{ steps.get-token.outputs.client_id }}
+      azure_tenant_id: ${{ steps.get-token.outputs.tenant_id }}
+      azure_subscription_id: ${{ steps.get-token.outputs.subscription_id }} 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -128,13 +131,13 @@ jobs:
             cat terraform_output.json
             exit 1
           fi
-      # Generate a token for the web deploy to avoid approval again
-      - name: Generate Azure token
+
+      # Pass the Azure data to the deploy job to avoid asking for approval again
+      - name: Pass Azure Data to Deploy Job
         run: |
-          # Get token and set as output (will be masked automatically)
-          TOKEN=$(az account get-access-token --query accessToken -o tsv)
-          echo "::add-mask::$TOKEN"  # Mask the token in logs
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          echo "client_id=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_OUTPUT
+          echo "tenant_id=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_OUTPUT
+          echo "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_OUTPUT
           
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -240,18 +243,13 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Login to Azure with token
-        run: |
-          # Create masked secret from the output
-          echo "::add-mask::${{ needs.terraform.outputs.azure_token }}"
-          # Login using the token instead of OIDC
-          az login --service-principal --allow-no-subscriptions --only-show-errors --access-token "$TOKEN"
-    # az login --service-principal \
-    #   -u ${{ secrets.AZURE_CLIENT_ID }} \
-    #   -t ${{ secrets.AZURE_TENANT_ID }} \
-    #   --allow-no-subscriptions \
-    #   --only-show-errors \
-    #   -p ${{ needs.terraform.outputs.azure_token }}
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          # Get the Azure data from terraform job to avoid asking for approval again
+          client-id: ${{ needs.terraform.outputs.azure_client_id }}
+          tenant-id: ${{ needs.terraform.outputs.azure_tenant_id }}
+          subscription-id: ${{ needs.terraform.outputs.azure_subscription_id }}
 
       # - name: Login to Azure
       #   uses: azure/login@v2
