@@ -2,7 +2,8 @@
 The web app provides a authentication to Azure Entra ID and role checking and full automatic terraform resource deployment. It is useful to build admin pages out of scratch. You do not have to setup anything on specific resources. Setup like env variables becomes obsolete here. Just create the resource group, connect github to it, connect terraform states and deploy. 
 ## Purpose detail
 This project fulfills the following requirements.
-### From this project [EntraId-Web-Auth-Reference]https://github.com/kstrassheim/entraid-web-auth-reference 
+### From current project [EntraId-Web-Auth-Reference]
+https://github.com/kstrassheim/entraid-web-auth-reference 
 - Create the whole infrastructure with terraform
 - Provide all required settings for the environment via terraform output
 - Build and connect all the applications according to the terraform config for each environment. __Without manual setup of environment variables__
@@ -13,7 +14,8 @@ This project fulfills the following requirements.
   - On Tag/Release - Deploy to test
   - On Test deployed (and approved) - Deploy to prod - (Environment has to be set as protected for approval)
 
-### From [FastAPI-Reference](https://github.com/kstrassheim/fastapi-reference)
+### From derived project [FastAPI-Reference]
+https://github.com/kstrassheim/fastapi-reference
 - Quick to initialize
 - Debug with breakpoints of Frontend and Backend and just in time compiler
 - Debug by starting F5 in VSCode (Starting chrome also)
