@@ -18,9 +18,19 @@ data "azuread_service_principal" "deploy_managed_identity_pricipal" {
   client_id = data.azurerm_user_assigned_identity.deploy_managed_identity.client_id
 }
 
+locals {
+  # apply resouce naming conventions
+  # remove environment from the name in prod
+  planName = var.env == "prod" ? replace(replace(module.naming.app_service_plan.name, "_", "-"), "-prod", "") : replace(module.naming.app_service_plan.name, "_", "-")
+  webName = var.env == "prod" ? replace(replace("${var.app_name}", "_", "-"), "-prod", "") : "${replace("${var.app_name}-${var.env}", "_", "-")}"
+  insightsName = var.env == "prod" ? "${replace("${var.app_name}-insights", "_", "-")}" : "${replace("${var.app_name}-insights-${var.env}", "_", "-")}"
+  appRegName = var.env == "prod" ? "${replace(var.app_name, "_", "-")}" : "${replace(var.app_name, "_", "-")}-${var.env}"
+}
+
 // Create an App Service Plan (Linux)
 resource "azurerm_service_plan" "plan" {
-  name                = module.naming.app_service_plan.name_unique
+  name                = local.planName
+  #name                = module.naming.app_service_plan.name_unique
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   os_type             = "Linux"
@@ -28,7 +38,9 @@ resource "azurerm_service_plan" "plan" {
 }
 
 resource "azurerm_linux_web_app" "web" {
-  name                = replace(module.naming.app_service.name,"_","-")
+  # remove prod fom website naming on prod
+  name                = local.webName
+  #name                = replace(module.naming.app_service.name,"_","-") # nomal naming with prod
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = azurerm_service_plan.plan.location
   service_plan_id     = azurerm_service_plan.plan.id
@@ -55,7 +67,7 @@ resource "azurerm_linux_web_app" "web" {
 }
 
 resource "azurerm_application_insights" "log" {
-  name                = module.naming.application_insights.name_unique
+  name                = local.insightsName
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   application_type    = "web"
@@ -63,7 +75,8 @@ resource "azurerm_application_insights" "log" {
 
 # Create an App Registration for the Entra ID Logon managed by the frontend
 resource "azuread_application" "reg" {
-  display_name     = "${replace(var.app_name, "_", "-")}-${var.env}"
+  # remove the name prod from the prod version
+  display_name     = var.env == "prod" ? "${replace(var.app_name, "_", "-")}" : "${replace(var.app_name, "_", "-")}-${var.env}"
   logo_image       = filebase64("${path.module}/frontend/logo_src/${var.env}/logo.png")
 
   # !! ABSOLUTELY IMPORTANT OTHERWISE - IDENTIFIER HAS TO BE CONFIGURED IN SEPERATE OBJECT BELOW AND THIS HAS TO BE SET !!
